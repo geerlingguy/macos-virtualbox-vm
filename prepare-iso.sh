@@ -1,41 +1,164 @@
 #!/bin/bash
 
-isoName=Yosemite
+#
+# This script will create a bootable ISO image from the installer application for El Capitan (10.11) or the new Sierra (10.12) macOS.
+# Restructured a bit, and adapted the 10.11 script from this URL:
+# https://forums.virtualbox.org/viewtopic.php?f=22&t=77068&p=358865&hilit=elCapitan+iso#p358865
+#
 
-# Mount the installer image
-hdiutil attach /Applications/Install\ OS\ X\ Yosemite.app/Contents/SharedSupport/InstallESD.dmg -noverify -nobrowse -mountpoint /Volumes/install_app
+#
+# createISO
+#
+# This function creates the ISO image for the user.
+# Inputs:  $1 = The name of the installer - located in your Applications folder or in your local folder/PATH.
+#          $2 = The Name of the ISO you want created.
+#
+function createISO()
+{
+  if [ $# -eq 2 ] ; then
+    local installerAppName=${1}
+    local isoName=${2}
+    local error=0
 
-# Convert the boot image to a sparse bundle
-hdiutil convert /Volumes/install_app/BaseSystem.dmg -format UDSP -o /tmp/${isoName}
+    # echo Debug: installerAppName = ${installerAppName} , isoName = ${isoName}
 
-# Increase the sparse bundle capacity to accommodate the packages
-hdiutil resize -size 8g /tmp/${isoName}.sparseimage
+    # ==============================================================
+    # 10.11 & 10.12: How to make an ISO from the Install app
+    # ==============================================================
+    echo
+    echo Mount the installer image
+    echo -----------------------------------------------------------
 
-# Mount the sparse bundle for package addition
-hdiutil attach /tmp/${isoName}.sparseimage -noverify -nobrowse -mountpoint /Volumes/install_build
+    if [ -e "${installerAppName}" ] ; then
+      echo $ hdiutil attach "${installerAppName}"/Contents/SharedSupport/InstallESD.dmg -noverify -nobrowse -mountpoint /Volumes/install_app
+      hdiutil attach "${installerAppName}"/Contents/SharedSupport/InstallESD.dmg -noverify -nobrowse -mountpoint /Volumes/install_app
+      error=$?
+    elif [ -e /Applications/"${installerAppName}" ] ; then
+      echo $ hdiutil attach /Applications/"${installerAppName}"/Contents/SharedSupport/InstallESD.dmg -noverify -nobrowse -mountpoint /Volumes/install_app
+      hdiutil attach /Applications/"${installerAppName}"/Contents/SharedSupport/InstallESD.dmg -noverify -nobrowse -mountpoint /Volumes/install_app
+      error=$?
+    else
+      echo Installer Not found!
+      error=1
+    fi
 
-# Remove Package link and replace with actual files
-rm /Volumes/install_build/System/Installation/Packages
-cp -rp /Volumes/install_app/Packages /Volumes/install_build/System/Installation/
+    if [ ${error} -ne 0 ] ; then
+      echo "Failed to mount the InstallESD.dmg from the instaler at ${installerAppName}.  Exiting. (${error})"
+      return ${error}
+    fi
 
-# Copy Base System
-cp -rp /Volumes/install_app/BaseSystem.dmg /Volumes/install_build/
-cp -rp /Volumes/install_app/BaseSystem.chunklist /Volumes/install_build/
+    echo
+    echo Create ${isoName} blank ISO image with a Single Partition - Apple Partition Map
+    echo --------------------------------------------------------------------------
+    echo $ hdiutil create -o /tmp/${isoName} -size 8g -layout SPUD -fs HFS+J -type SPARSE
+    hdiutil create -o /tmp/${isoName} -size 8g -layout SPUD -fs HFS+J -type SPARSE
 
-# Unmount the installer image
-hdiutil detach /Volumes/install_app
+    echo
+    echo Mount the sparse bundle for package addition
+    echo --------------------------------------------------------------------------
+    echo $ hdiutil attach /tmp/${isoName}.sparseimage -noverify -nobrowse -mountpoint /Volumes/install_build
+    hdiutil attach /tmp/${isoName}.sparseimage -noverify -nobrowse -mountpoint /Volumes/install_build
 
-# Unmount the sparse bundle
-hdiutil detach /Volumes/install_build
+    echo
+    echo Restore the Base System into the ElCapitan ISO image
+    echo --------------------------------------------------------------------------
+    echo $ asr restore -source /Volumes/install_app/BaseSystem.dmg -target /Volumes/install_build -noprompt -noverify -erase
+    asr restore -source /Volumes/install_app/BaseSystem.dmg -target /Volumes/install_build -noprompt -noverify -erase
 
-# Resize the partition in the sparse bundle to remove any free space
-hdiutil resize -size `hdiutil resize -limits /tmp/${isoName}.sparseimage | tail -n 1 | awk '{ print $1 }'`b /tmp/${isoName}.sparseimage
+    echo
+    echo Remove Package link and replace with actual files
+    echo --------------------------------------------------------------------------
+    echo $ rm /Volumes/OS\ X\ Base\ System/System/Installation/Packages
+    rm /Volumes/OS\ X\ Base\ System/System/Installation/Packages
+    echo $ cp -rp /Volumes/install_app/Packages /Volumes/OS\ X\ Base\ System/System/Installation/
+    cp -rp /Volumes/install_app/Packages /Volumes/OS\ X\ Base\ System/System/Installation/
 
-# Convert the sparse bundle to ISO/CD master
-hdiutil convert /tmp/${isoName}.sparseimage -format UDTO -o /tmp/${isoName}
+    echo
+    echo Copy macOS ${isoName} installer dependencies
+    echo --------------------------------------------------------------------------
+    echo $ cp -rp /Volumes/install_app/BaseSystem.chunklist /Volumes/OS\ X\ Base\ System/BaseSystem.chunklist
+    cp -rp /Volumes/install_app/BaseSystem.chunklist /Volumes/OS\ X\ Base\ System/BaseSystem.chunklist
+    echo $ cp -rp /Volumes/install_app/BaseSystem.dmg /Volumes/OS\ X\ Base\ System/BaseSystem.dmg
+    cp -rp /Volumes/install_app/BaseSystem.dmg /Volumes/OS\ X\ Base\ System/BaseSystem.dmg
 
-# Remove the sparse bundle
-rm /tmp/${isoName}.sparseimage
+    echo
+    echo Unmount the installer image
+    echo --------------------------------------------------------------------------
+    echo $ hdiutil detach /Volumes/install_app
+    hdiutil detach /Volumes/install_app
 
-# Rename the ISO and move it to the desktop
-mv /tmp/${isoName}.cdr ~/Desktop/${isoName}.iso
+    echo
+    echo Unmount the sparse bundle
+    echo --------------------------------------------------------------------------
+    echo $ hdiutil detach /Volumes/OS\ X\ Base\ System/
+    hdiutil detach /Volumes/OS\ X\ Base\ System/
+
+    echo
+    echo Resize the partition in the sparse bundle to remove any free space
+    echo --------------------------------------------------------------------------
+    echo $ hdiutil resize -size `hdiutil resize -limits /tmp/${isoName}.sparseimage | tail -n 1 | awk '{ print $1 }'`b /tmp/${isoName}.sparseimage
+    hdiutil resize -size `hdiutil resize -limits /tmp/${isoName}.sparseimage | tail -n 1 | awk '{ print $1 }'`b /tmp/${isoName}.sparseimage
+
+    echo
+    echo Convert the sparse bundle to ISO/CD master
+    echo --------------------------------------------------------------------------
+    echo $ hdiutil convert /tmp/${isoName}.sparseimage -format UDTO -o /tmp/${isoName}
+    hdiutil convert /tmp/${isoName}.sparseimage -format UDTO -o /tmp/${isoName}
+
+    echo
+    echo Remove the sparse bundle
+    echo --------------------------------------------------------------------------
+    echo $ rm /tmp/${isoName}.sparseimage
+    rm /tmp/${isoName}.sparseimage
+
+    echo
+    echo Rename the ISO and move it to the desktop
+    echo --------------------------------------------------------------------------
+    echo $ mv /tmp/${isoName}.cdr ~/Desktop/${isoName}.iso
+    mv /tmp/${isoName}.cdr ~/Desktop/${isoName}.iso
+  fi
+}
+
+#
+# installerExists
+#
+# Returns 0 if the installer was found either locally or inthe /Applications directory.  1 if not.
+#
+function installerExists()
+{
+  local installerAppName=$1
+  local result=1
+  if [ -e "${installerAppName}" ] ; then
+    result=0
+  elif [ -e /Applications/"${installerAppName}" ] ; then
+    result=0
+  fi
+  return ${result}
+}
+
+#
+# Main script code
+#
+# See if we can find either the ElCapitan or the 10.12 installer.
+# If successful, then create the iso file from the installer.
+#
+
+installerExists "Install 10.12 Developer Preview.app"
+result=$?
+if [ ${result} -eq 0 ] ; then
+  createISO "Install 10.12 Developer Preview.app" "Sierra"
+else
+  installerExists "Install OS X El Capitan.app"
+  result=$?
+  if [ ${result} -eq 0 ] ; then
+    createISO "Install OS X El Capitan.app" "ElCapitan"
+  else
+    installerExists "Install OS X Yosemite.app"
+    result=$?
+    if [ ${result} -eq 0 ] ; then
+      createISO "Install OS X Yosemite.app" "Yosemite"
+    else
+      echo "Could not find installer for Yosemite (10.10), El Capitan (10.11) or Sierra (10.12)."
+    fi
+  fi
+fi
