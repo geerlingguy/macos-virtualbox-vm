@@ -5,16 +5,24 @@
 To build a VM running Mac OS X, follow the directions below:
 
   1. Download the installer from Mac App Store (it should be available in the 'Purchases' section if you've acquired it previously). The installer will be placed in your Applications folder.  (Should work for Yosemite, El Capitan and Sierra - 10.10-10.12.)
-  2. If you downloaded the Yosemite installer, run the included `prepare-iso.sh` script (make it executable first, with `chmod +x`, then run `./prepare-iso.sh` from the folder containing the script).  A new installer iso will eventually be saved to the Desktop. 
-  3. Open VirtualBox and create a new VM.
-  4. Set name, type, and version (set to Mavericks for 'Version').  (This might not be necessary in the latest VirtualBox release.)
-  5. Follow the rest of the VM creation wizard and either leave the defaults or adjust to your liking.
-  6. In Terminal, run the command `VBoxManage modifyvm "{vmname}" --cpuidset 00000001 000306a9 00020800 80000201 178bfbff` (where "Mac OS X" is the exact name of the OS X VM set in step 4) so the VM has the right CPU settings for macOS.
-  7. To prevent choppiness in the VM, go into settings and uncheck the 'Enable Audio' option under 'Audio'.
-  8. Click 'Start' to boot the new VM.
-  9. Select the iso created in step 2 when VirtualBox asks for it.
-  10. Once the installer appears, instead of clicking 'Continue', first go to Utilities > Disk Utility and partition/format the VirtualBox disk as a "Mac OS X Extended (Journaled)" drive.
-  11. Quit Disk Utility, and then continue with installation as normal.
+  1. If you downloaded the Yosemite installer, run the included `prepare-iso.sh` script (make it executable first, with `chmod +x`, then run `./prepare-iso.sh` from the folder containing the script).  A new installer iso will eventually be saved to the Desktop. 
+  1. Open VirtualBox and create a new VM.
+  1. Set name, type, and version (set to Mavericks for 'Version').  (This might not be necessary in the latest VirtualBox release.)
+  1. Follow the rest of the VM creation wizard and either leave the defaults or adjust to your liking.
+  1. In Terminal, run the command `VBoxManage modifyvm "{vmname}" --cpuidset 00000001 000306a9 00020800 80000201 178bfbff` (where "Mac OS X" is the exact name of the OS X VM set in step 4) so the VM has the right CPU settings for macOS.
+  1. When booting into a black screen, check the following properties in the VM settings
+    * System > Motherboard > Chipset: PIIX3
+    * System > Motherboard > Enable EFI
+    * System > Acceleration > Enable Nested Paging
+    * Storage > Make sure the hard disk is attached to a SATA controller of type AHCI
+    * Network > Adapter (1 or any other) > Extended Settings > Adapter Type: Intel PRO/1000 T Server (82543GC)
+    * Ports > Serial Ports > Enable Serial Ports (uncheck this)
+    * Ports > USB > Enable USB Controller (check this)
+  1. To prevent choppiness in the VM, go into settings and uncheck the 'Enable Audio' option under 'Audio'.
+  1. Click 'Start' to boot the new VM.
+  1. Select the iso created in step 2 when VirtualBox asks for it.
+  1. Once the installer appears, instead of clicking 'Continue', first go to Utilities > Disk Utility and partition/format the VirtualBox disk as a "Mac OS X Extended (Journaled)" drive.
+  1. Quit Disk Utility, and then continue with installation as normal.
 
 When the installation is complete, and you have a fresh new Mac OS X VM, you can shut it down and create a snapshot so you can go back to the initial state in the future. I use this technique to test the [`mac-dev-playbook`](https://github.com/geerlingguy/mac-dev-playbook), which I use to set up and configure my own Mac workstation for web and app development.
 
