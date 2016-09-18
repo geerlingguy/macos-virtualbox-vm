@@ -10,7 +10,7 @@ To build a VM running Mac OS X, follow the directions below:
   4. Set name, type, and version (set to Mavericks for 'Version').  (This might not be necessary in the latest VirtualBox release.)
   5. Follow the rest of the VM creation wizard and either leave the defaults or adjust to your liking.
   6. In Terminal, run the command `VBoxManage modifyvm "{vmname}" --cpuidset 00000001 000306a9 00020800 80000201 178bfbff` (where "Mac OS X" is the exact name of the OS X VM set in step 4) so the VM has the right CPU settings for macOS.
-    * When VirtualBox boots into a "black screen", check the following properties in the VM settings
+    * If VirtualBox boots into a "black screen", check the following properties in the VM settings
       * System > Motherboard > Chipset: PIIX3
       * System > Motherboard > Enable EFI
       * System > Acceleration > Enable Nested Paging
