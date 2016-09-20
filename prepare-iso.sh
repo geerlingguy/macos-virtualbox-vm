@@ -122,7 +122,7 @@ function createISO()
 #
 # installerExists
 #
-# Returns 0 if the installer was found either locally or inthe /Applications directory.  1 if not.
+# Returns 0 if the installer was found either locally or in the /Applications directory.  1 if not.
 #
 function installerExists()
 {
@@ -143,10 +143,10 @@ function installerExists()
 # If successful, then create the iso file from the installer.
 #
 
-installerExists "Install 10.12 Developer Preview.app"
+installerExists "Install macOS Sierra.app"
 result=$?
 if [ ${result} -eq 0 ] ; then
-  createISO "Install 10.12 Developer Preview.app" "Sierra"
+  createISO "Install macOS Sierra.app" "Sierra"
 else
   installerExists "Install OS X El Capitan.app"
   result=$?
