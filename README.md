@@ -8,7 +8,7 @@ To build a VM running macOS, follow the directions below:
   2. If you downloaded the Yosemite installer, run the included `prepare-iso.sh` script (make it executable first, with `chmod +x`, then run `./prepare-iso.sh` from the folder containing the script).  A new installer iso will eventually be saved to the Desktop.
   3. Open VirtualBox and create a new VM.
   4. Set name, type, and version (set to Sierra for 'Version'). (This might not be necessary in the latest VirtualBox release.)
-  5. Follow the rest of the VM creation wizard and either leave the defaults or adjust to your liking.
+  5. Follow the rest of the VM creation wizard and either leave the defaults or adjust to your liking. Be sure to at lease increse video memory to 128 MB, otherwise the VM won't boot.
   6. In Terminal, run the command `VBoxManage modifyvm "{vmname}" --cpuidset 00000001 000306a9 00020800 80000201 178bfbff` (where `"{vmname}"` is the exact name of the VM set in step 4) so the VM has the right CPU settings for macOS.
   7. To prevent choppiness in the VM, go into settings and uncheck the 'Enable Audio' option under 'Audio'.
   8. Click 'Start' to boot the new VM.
