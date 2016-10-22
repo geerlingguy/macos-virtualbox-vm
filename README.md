@@ -36,18 +36,18 @@ To build a VM running macOS, follow the directions below:
 - Depending on your hardware, you may also want to increase RAM and the share of CPU power the VM is allowed to use.
 - When the installation is complete, and you have a fresh new macOS VM, you can shut it down and create a snapshot. This way, you can go back to the initial state in the future. I use this technique to test the [`mac-dev-playbook`](https://github.com/geerlingguy/mac-dev-playbook), which I use to set up and configure my own Mac workstation for web and app development.
 
-##Larger VM Screen Resolution
+## Larger VM Screen Resolution
 
 To control the screen size of your macOS VM:
 
   1. Shutdown your VM
   2. Run the following VBoxManage command:
+        
+        VBoxManage setextradata "[VM_NAME]" VBoxInternal2/EfiGopMode N
 
-`VBoxManage setextradata "{vmname}" VBoxInternal2/EfiGopMode N`  
+Replace `[VM_NAME]` with the name of your Virtual Machine.  Replace `N` with one of 0,1,2,3,4,5. These numbers correspond to the screen resolutions 640x480, 800x600, 1024x768, 1280x1024, 1440x900, 1920x1200 screen resolution, respectively.
 
-Replace `{vmname}` with the name of your Virtual Machine.  Replace `N` with one of 0,1,2,3,4,5.  These numbers correspond to the screen resolutions 640x480, 800x600, 1024x768, 1280x1024, 1440x900, 1920x1200 screen resolution respectively.
-
-The video mode can only be changed when the VM is powered off and remains persistent until changed.  The full discussion can be found at this link for the original [`Forum Discussion`](https://forums.virtualbox.org/viewtopic.php?f=22&t=54030).
+The video mode can only be changed when the VM is powered off and remains persistent until changed. See more details in [this forum discussion](https://forums.virtualbox.org/viewtopic.php?f=22&t=54030).
 
 ## Notes
 
