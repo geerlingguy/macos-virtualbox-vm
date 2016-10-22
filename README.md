@@ -22,15 +22,13 @@ I've noticed that sometimes I need to go in and explicitly mark the iso as a Liv
 
 ##Larger VM Screen Resolution
 
-EFI provides two distinct video interfaces: GOP (Graphics Output Protocol) and UGA (Universal Graphics Adapter). macOS uses GOP, while Linux tends to use UGA. VirtualBox provides a configuration option to control the framebuffer size for both interfaces.
-
-To control GOP, use the following VBoxManage command:
+To control the screen size of your macOS VM, shut down your VM, then run the following VBoxManage command:
 
 `VBoxManage setextradata "{vmname}" VBoxInternal2/EfiGopMode N`  
 
-Replace `{vmname}` with the name of your Virtual Machine.  Replace `N` with one of 0,1,2,3,4,5 referring to the screen resolutions 640x480, 800x600, 1024x768, 1280x1024, 1440x900, 1920x1200 screen resolution respectively.
+Replace `{vmname}` with the name of your Virtual Machine.  Replace `N` with one of 0,1,2,3,4,5.  These numbers corespond to the screen resolutions 640x480, 800x600, 1024x768, 1280x1024, 1440x900, 1920x1200 screen resolution respectively.
 
-The video mode for both GOP and UGA can only be changed when the VM is powered off and remains persistent until changed.  The full discussion can be found at this link for the original [`Forum Discussion`](https://forums.virtualbox.org/viewtopic.php?f=22&t=54030).
+The video mode can only be changed when the VM is powered off and remains persistent until changed.  The full discussion can be found at this link for the original [`Forum Discussion`](https://forums.virtualbox.org/viewtopic.php?f=22&t=54030).
 
 ## Notes
 
