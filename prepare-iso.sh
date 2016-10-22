@@ -122,7 +122,7 @@ function createISO()
 #
 # installerExists
 #
-# Returns 0 if the installer was found either locally or inthe /Applications directory.  1 if not.
+# Returns 0 if the installer was found either locally or in the /Applications directory.  1 if not.
 #
 function installerExists()
 {
