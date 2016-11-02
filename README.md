@@ -25,16 +25,16 @@ To build a VM running macOS, follow the directions below.
 4.  Set:
 
     -   *Name:* your choice
-    -   *Type:* `Mac OS X`
-    -   *Version:* `Mac OS X 10.11 El Capitan (64-bit)` or `macOS Sierra`, if your version of VirtualBox has been
+    -   *Type:* **Mac OS X**
+    -   *Version:* **Mac OS X 10.11 El Capitan (64-bit)** or **macOS Sierra**, if your version of VirtualBox has been
         updated to include it.
 
 5.  Follow the rest of the VM creation wizard and either leave the defaults or adjust to your liking. You may want to
     increase the video memory from the VirtualBox default of 16MB to 64MB or 128MB. While the current release of macOS
     Sierra does boot with just 16MB, interface performance is severely constraint.
 
-6.  In Terminal, run the command the following command (where `"{VM_NAME}"` is the exact name of the VM set in step 4)
-    so the VM has the right CPU settings for macOS.
+6.  In Terminal, run the command the following command (where `{VM_NAME}` is the exact name of the VM set in step 4) so
+    the VM has the right CPU settings for macOS.
 
     ```shell
     VBoxManage modifyvm "{VM_NAME}" --cpuidset 00000001 000306a9 00020800 80000201 178bfbff
@@ -51,7 +51,7 @@ To build a VM running macOS, follow the directions below.
 11. Go to **Utilities** -> **Disk Utility**. Select the VirtualBox disk and choose **Erase** to format it as a
     **Mac OS Extended (Journaled)** drive.
 
-12. Quit Disk Utility, and then continue with installation as normal.
+12. Quit Disk Utility, and then continue with installation as normal, choosing the newly formatted disk when prompted.
 
 ## Troubleshooting & Improvements
 
@@ -88,7 +88,7 @@ To control the screen size of your macOS VM, follow the directions below.
     ```
 
     Replace `{VM_NAME}` with the name of your Virtual Machine.  Replace `{N}` with one of 0, 1, 2, 3, 4, 5. These
-    numbers correspond to the 640x480, 800x600, 1024x768, 1280x1024, 1440x900, 1920x1200 screen resolutions,
+    numbers correspond to the 640x480, 800x600, 1024x768, 1280x1024, 1440x900, and 1920x1200 screen resolutions,
     respectively.
 
     The video mode can only be changed when the VM is powered off and remains persistent until changed. See more
