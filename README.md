@@ -11,7 +11,7 @@ To build a VM running macOS, follow the directions below:
       If the script fails to find the installer you can specify its path as the first parameter. By default, the output is saved as <Yosemite|El Capitan|Sierra>.iso on the Desktop. You can change this using the second parameter.
       Example:
 
-          ./prepare-iso.sh /Applications/Install\ macOS Sierra\ 2.1\ Beta\ 2.app /Users/Steve/sierra-2.1-b2.iso
+          ./prepare-iso.sh /Applications/Install\ macOS Sierra\ 2.1\ Beta\ 2.app sierra-2.1-b2
 
   3. Open VirtualBox and create a new VM.
   4. Set:
