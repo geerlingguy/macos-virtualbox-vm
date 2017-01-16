@@ -60,7 +60,7 @@ function createISO()
     hdiutil attach /tmp/${isoName}.sparseimage -noverify -nobrowse -mountpoint /Volumes/install_build
 
     echo
-    echo Restore the Base System into the ElCapitan ISO image
+    echo Restore the Base System into the ${isoName} ISO image
     echo --------------------------------------------------------------------------
     echo $ asr restore -source /Volumes/install_app/BaseSystem.dmg -target /Volumes/install_build -noprompt -noverify -erase
     asr restore -source /Volumes/install_app/BaseSystem.dmg -target /Volumes/install_build -noprompt -noverify -erase
