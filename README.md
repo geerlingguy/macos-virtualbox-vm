@@ -17,7 +17,7 @@ To build a VM running macOS, follow the directions below:
       - name: your choice
       - type: `OS X`
       - version: `Mac OS X 10.11 El Capitan (64-bit)` or `macOS Sierra`, if your version of VirtualBox has been updated to include it.
-  5. Follow the rest of the VM creation wizard and either leave the defaults or adjust to your liking. You may want to increase the video memory from the VirtualBox default of 16MB to 64MB or 128MB. While the current release of macOS Sierra does boot with just 16MB, interace performance is severly constraint.
+  5. Follow the rest of the VM creation wizard and either leave the defaults or adjust to your liking. Increase the video memory from the VirtualBox default of 16MB to at least 128MB, otherwise Sierra might not boot correctly, and display performance will be abysmal.
   6. In Terminal, run the command `VBoxManage modifyvm "{vmname}" --cpuidset 00000001 000306a9 00020800 80000201 178bfbff` (where `"{vmname}"` is the exact name of the VM set in step 4) so the VM has the right CPU settings for macOS.
   7. To prevent choppiness in the VM, go into settings and uncheck the 'Enable Audio' option under 'Audio'.
   8. Click 'Start' to boot the new VM.
