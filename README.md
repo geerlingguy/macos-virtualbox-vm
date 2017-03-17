@@ -30,6 +30,7 @@ To build a VM running macOS, follow the directions below:
 ## Troubleshooting & Improvements
 
 - I've noticed that sometimes I need to go in and explicitly mark the iso as a Live CD in the VM settings in order to get the VM to boot from the image.
+- If you try to start your VM and it does not boot up at all, check to make sure you have enough RAM to run your VM.
 - Conversly, VirtualBox sometimes does not eject the virtual installer DVD after installation. If your VM boots into the installer again, remove the ISO in `Settings -> Storage`.
 - VirtualBox uses the left command key as the "host key" by default. If you want to use it for shortcuts like `command+c` or `command-v` (copy&paste), you need to remap or unset the "Host Key Combination" in `Preferences -> Input -> Virtual Machine`.
 - The default Video Memory of 16MB is far below Apple's official requirement of 128MB. Increasing this value may help if you run into problems and is also the most effective performance tuning.
