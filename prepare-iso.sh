@@ -139,9 +139,11 @@ function installerExists()
 #
 # Main script code
 #
-# See if we can find either the ElCapitan or the 10.12 installer.
+# Eject installer disk in case it was opened after download from App Store
+hdiutil info | grep /dev/disk | grep partition | cut -f 1 | xargs hdiutil detach -force
+
+# See if we can find either the ElCapitan or the Sierra installer.
 # If successful, then create the iso file from the installer.
-#
 
 installerExists "Install macOS Sierra.app"
 result=$?
