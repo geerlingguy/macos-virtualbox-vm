@@ -45,7 +45,7 @@ To control the screen size of your macOS VM:
   1. Shutdown your VM
   2. Run the following VBoxManage command:
 
-        VBoxManage setextradata "[VM_NAME]" VBoxInternal2/EfiGopMode N
+          VBoxManage setextradata "[VM_NAME]" VBoxInternal2/EfiGopMode N
 
 Replace `[VM_NAME]` with the name of your Virtual Machine.  Replace `N` with one of 0,1,2,3,4,5. These numbers correspond to the screen resolutions 640x480, 800x600, 1024x768, 1280x1024, 1440x900, 1920x1200 screen resolution, respectively.
 
