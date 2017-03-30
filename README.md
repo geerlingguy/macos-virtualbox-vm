@@ -4,7 +4,7 @@ Current macOS version: *Sierra (10.12)*, tested with VirtualBox *5.1.6 r110634*
 
 To build a VM running macOS, follow the directions below:
 
-  1. Download the installer from Mac App Store (it should be available in the 'Purchases' section if you've acquired it previously). The installer will be placed in your Applications folder.  (Should work for Yosemite, El Capitan and Sierra - 10.10-10.12.)
+  1. Download the installer from Mac App Store (it should be available in the 'Purchases' section if you've acquired it previously). The installer will be placed in your Applications folder.  (Should work for Yosemite, El Capitan and Sierra - 10.10-10.12.). Note that on some hardware, you won't be able to download old OS versions that Apple hasn't verified to work on that hardware. In this case, you may try using older hardware that you have or borrowing old hardware from a friend, in order to download the older OS version. For example, I couldn't download anything other than Sierra on my new MacBook Pro with Touch Bar, but I was able to download even Yosemite on my older-generation MacBook Pro.
   2. Make the script executable and run it: `chmod +x prepare-iso.sh && ./prepare-iso.sh`.
 
       If the script fails to find the installer you can specify its path as the first parameter. By default, the output is saved as <Yosemite|El Capitan|Sierra>.iso on the Desktop. You can change this using the second parameter.
