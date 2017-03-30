@@ -50,6 +50,10 @@ Replace `[VM_NAME]` with the name of your Virtual Machine.  Replace `N` with one
 
 The video mode can only be changed when the VM is powered off and remains persistent until changed. See more details in [this forum discussion](https://forums.virtualbox.org/viewtopic.php?f=22&t=54030).
 
+## Verified configurations
+
+  - OS X 10.10 Yosemite with VirtualBox 5.1.18 on OS X 10.12.4 Sierra - @msabramo 2017-03-30
+
 ## Notes
 
   - Code for this example mostly comes from VirtualBox forums and [this article](http://sqar.blogspot.de/2014/10/installing-yosemite-in-virtualbox.html).
