@@ -11,7 +11,7 @@ To build a VM running macOS, follow the directions below:
       If the script fails to find the installer you can specify its path as the first parameter. By default, the output is saved as <Yosemite|El Capitan|Sierra>.iso on the Desktop. You can change this using the second parameter.
       Example:
 
-            ./prepare-iso.sh /Applications/Install\ macOS Sierra\ 2.1\ Beta\ 2.app /Users/Steve/sierra-2.1-b2.iso
+          ./prepare-iso.sh /Applications/Install\ macOS Sierra\ 2.1\ Beta\ 2.app /Users/Steve/sierra-2.1-b2.iso
 
   3. Open VirtualBox and create a new VM.
   4. Set:
@@ -44,8 +44,8 @@ To control the screen size of your macOS VM:
 
   1. Shutdown your VM
   2. Run the following VBoxManage command:
-      
-      VBoxManage setextradata "[VM_NAME]" VBoxInternal2/EfiGopMode N
+
+        VBoxManage setextradata "[VM_NAME]" VBoxInternal2/EfiGopMode N
 
 Replace `[VM_NAME]` with the name of your Virtual Machine.  Replace `N` with one of 0,1,2,3,4,5. These numbers correspond to the screen resolutions 640x480, 800x600, 1024x768, 1280x1024, 1440x900, 1920x1200 screen resolution, respectively.
 
