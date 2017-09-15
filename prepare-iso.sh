@@ -140,7 +140,10 @@ function installerExists()
 # Main script code
 #
 # Eject installer disk in case it was opened after download from App Store
-hdiutil info | grep /dev/disk | grep partition | cut -f 1 | xargs hdiutil detach -force
+# added support for multiple disks
+for disk in $(hdiutil info | grep /dev/disk | grep partition | cut -f 1); do
+  hdiutil detach -force ${disk}
+done
 
 # See if we can find either the ElCapitan or the Sierra installer.
 # If successful, then create the iso file from the installer.
