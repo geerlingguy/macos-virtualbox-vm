@@ -37,6 +37,7 @@ function createISO()
       echo $ hdiutil attach /Applications/"${installerAppName}"/Contents/SharedSupport/InstallESD.dmg -noverify -nobrowse -mountpoint /Volumes/install_app
       hdiutil attach /Applications/"${installerAppName}"/Contents/SharedSupport/InstallESD.dmg -noverify -nobrowse -mountpoint /Volumes/install_app
       error=$?
+      installerAppName="/Applications/${installerAppName}"
     else
       echo Installer Not found!
       error=1
