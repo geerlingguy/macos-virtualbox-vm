@@ -38,6 +38,14 @@ To build a VM running macOS, follow the directions below:
 - Depending on your hardware, you may also want to increase RAM and the share of CPU power the VM is allowed to use.
 - When the installation is complete, and you have a fresh new macOS VM, you can shut it down and create a snapshot. This way, you can go back to the initial state in the future. I use this technique to test the [`mac-dev-playbook`](https://github.com/geerlingguy/mac-dev-playbook), which I use to set up and configure my own Mac workstation for web and app development.
 - If for High Sierra you can not find the VirtualBox disk created inside the Disk Utility select `View -> Show All Devices` and format the newly visible device ([Source: tinyapps.org](https://tinyapps.org/blog/mac/201710010700_high_sierra_disk_utility.html)).
+- If for High Sierra you encounter boot / EFI problems, restart the VM and hit `F12` to get to the VirtualBox boot manager.  Select **EFI In-Terminal Shell** and run:
+```bash
+Shell> fs1:
+FS1:\> cd "macOS Install Data"
+FS1:\macOS Install Data\> cd "Locked Files"
+FS1:\macOS Install Data\Locked Files\> cd "Boot Files"
+FS1:\macOS Install Data\Locked Files\Boot Files\> boot.efi
+```
 
 ## Larger VM Screen Resolution
 
