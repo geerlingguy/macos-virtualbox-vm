@@ -63,40 +63,40 @@ function createISO()
     echo Restore the Base System into the ${isoName} ISO image
     echo --------------------------------------------------------------------------
     if [ "${isoName}" == "HighSierra" ] ; then
-		  echo $ time asr restore -source "${installerAppName}"/Contents/SharedSupport/BaseSystem.dmg -target /Volumes/install_build -noprompt -noverify -erase
-    	time asr restore -source "${installerAppName}"/Contents/SharedSupport/BaseSystem.dmg -target /Volumes/install_build -noprompt -noverify -erase
-	  else
-		  echo $ asr restore -source /Volumes/install_app/BaseSystem.dmg -target /Volumes/install_build -noprompt -noverify -erase
-    	asr restore -source /Volumes/install_app/BaseSystem.dmg -target /Volumes/install_build -noprompt -noverify -erase
-	  fi
-	
+      echo $ time asr restore -source "${installerAppName}"/Contents/SharedSupport/BaseSystem.dmg -target /Volumes/install_build -noprompt -noverify -erase
+      time asr restore -source "${installerAppName}"/Contents/SharedSupport/BaseSystem.dmg -target /Volumes/install_build -noprompt -noverify -erase
+    else
+      echo $ asr restore -source /Volumes/install_app/BaseSystem.dmg -target /Volumes/install_build -noprompt -noverify -erase
+      asr restore -source /Volumes/install_app/BaseSystem.dmg -target /Volumes/install_build -noprompt -noverify -erase
+    fi
+
     echo
     echo Remove Package link and replace with actual files
     echo --------------------------------------------------------------------------
-	  if [ "${isoName}" == "HighSierra" ] ; then
-	    echo $ time ditto -V /Volumes/install_app/Packages /Volumes/OS\ X\ Base\ System/System/Installation/
-    	time ditto -V /Volumes/install_app/Packages /Volumes/OS\ X\ Base\ System/System/Installation/
-	  else	
-    	echo $ rm /Volumes/OS\ X\ Base\ System/System/Installation/Packages
-    	rm /Volumes/OS\ X\ Base\ System/System/Installation/Packages
-    	echo $ cp -rp /Volumes/install_app/Packages /Volumes/OS\ X\ Base\ System/System/Installation/
-    	cp -rp /Volumes/install_app/Packages /Volumes/OS\ X\ Base\ System/System/Installation/
-	  fi
-	
+    if [ "${isoName}" == "HighSierra" ] ; then
+      echo $ time ditto -V /Volumes/install_app/Packages /Volumes/OS\ X\ Base\ System/System/Installation/
+      time ditto -V /Volumes/install_app/Packages /Volumes/OS\ X\ Base\ System/System/Installation/
+    else
+      echo $ rm /Volumes/OS\ X\ Base\ System/System/Installation/Packages
+      rm /Volumes/OS\ X\ Base\ System/System/Installation/Packages
+      echo $ cp -rp /Volumes/install_app/Packages /Volumes/OS\ X\ Base\ System/System/Installation/
+      cp -rp /Volumes/install_app/Packages /Volumes/OS\ X\ Base\ System/System/Installation/
+    fi
+
     echo
     echo Copy macOS ${isoName} installer dependencies
     echo --------------------------------------------------------------------------
-	  if [ "${isoName}" == "HighSierra" ] ; then
-	    echo $ ditto -V "${installerAppName}"/Contents/SharedSupport/BaseSystem.chunklist /Volumes/OS\ X\ Base\ System/BaseSystem.chunklist
-    	ditto -V "${installerAppName}"/Contents/SharedSupport/BaseSystem.chunklist /Volumes/OS\ X\ Base\ System/BaseSystem.chunklist
-    	echo $ time ditto -V "${installerAppName}"/Contents/SharedSupport/BaseSystem.dmg /Volumes/OS\ X\ Base\ System/BaseSystem.dmg
-    	time ditto -V "${installerAppName}"/Contents/SharedSupport/BaseSystem.dmg /Volumes/OS\ X\ Base\ System/BaseSystem.dmg	
-	  else
-    	echo $ cp -rp /Volumes/install_app/BaseSystem.chunklist /Volumes/OS\ X\ Base\ System/BaseSystem.chunklist
-    	cp -rp /Volumes/install_app/BaseSystem.chunklist /Volumes/OS\ X\ Base\ System/BaseSystem.chunklist
-    	echo $ cp -rp /Volumes/install_app/BaseSystem.dmg /Volumes/OS\ X\ Base\ System/BaseSystem.dmg
-    	cp -rp /Volumes/install_app/BaseSystem.dmg /Volumes/OS\ X\ Base\ System/BaseSystem.dmg
-	  fi
+    if [ "${isoName}" == "HighSierra" ] ; then
+      echo $ ditto -V "${installerAppName}"/Contents/SharedSupport/BaseSystem.chunklist /Volumes/OS\ X\ Base\ System/BaseSystem.chunklist
+      ditto -V "${installerAppName}"/Contents/SharedSupport/BaseSystem.chunklist /Volumes/OS\ X\ Base\ System/BaseSystem.chunklist
+      echo $ time ditto -V "${installerAppName}"/Contents/SharedSupport/BaseSystem.dmg /Volumes/OS\ X\ Base\ System/BaseSystem.dmg
+      time ditto -V "${installerAppName}"/Contents/SharedSupport/BaseSystem.dmg /Volumes/OS\ X\ Base\ System/BaseSystem.dmg
+    else
+      echo $ cp -rp /Volumes/install_app/BaseSystem.chunklist /Volumes/OS\ X\ Base\ System/BaseSystem.chunklist
+      cp -rp /Volumes/install_app/BaseSystem.chunklist /Volumes/OS\ X\ Base\ System/BaseSystem.chunklist
+      echo $ cp -rp /Volumes/install_app/BaseSystem.dmg /Volumes/OS\ X\ Base\ System/BaseSystem.dmg
+      cp -rp /Volumes/install_app/BaseSystem.dmg /Volumes/OS\ X\ Base\ System/BaseSystem.dmg
+    fi
 
     echo
     echo Unmount the installer image
