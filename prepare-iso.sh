@@ -160,7 +160,7 @@ function installerExists()
 # Eject installer disk in case it was opened after download from App Store
 hdiutil info | grep /dev/disk | grep partition | cut -f 1 | xargs --no-run-if-empty hdiutil detach -force
 
-# See if we can find either the ElCapitan or the Sierra installer.
+# See if we can find an elligible installer.
 # If successful, then create the iso file from the installer.
 
 installerExists "Install macOS High Sierra.app"
