@@ -20,32 +20,12 @@ function createISO()
     local isoName=${2}
     local error=0
 
-    # echo Debug: installerAppName = ${installerAppName} , isoName = ${isoName}
+    #echo Debug: installerAppName = ${installerAppName} , isoName = ${isoName}
 
-    # ==============================================================
-    # 10.11 & 10.12: How to make an ISO from the Install app
-    # ==============================================================
-    echo
-    echo Mount the installer image
-    echo -----------------------------------------------------------
-
-    if [ -e "${installerAppName}" ] ; then
-      echo $ hdiutil attach "${installerAppName}"/Contents/SharedSupport/InstallESD.dmg -noverify -nobrowse -mountpoint /Volumes/install_app
-      hdiutil attach "${installerAppName}"/Contents/SharedSupport/InstallESD.dmg -noverify -nobrowse -mountpoint /Volumes/install_app
-      error=$?
-    elif [ -e /Applications/"${installerAppName}" ] ; then
-      echo $ hdiutil attach /Applications/"${installerAppName}"/Contents/SharedSupport/InstallESD.dmg -noverify -nobrowse -mountpoint /Volumes/install_app
-      hdiutil attach /Applications/"${installerAppName}"/Contents/SharedSupport/InstallESD.dmg -noverify -nobrowse -mountpoint /Volumes/install_app
-      error=$?
-    else
-      echo Installer Not found!
-      error=1
-    fi
-
-    if [ ${error} -ne 0 ] ; then
-      echo "Failed to mount the InstallESD.dmg from the instaler at ${installerAppName}.  Exiting. (${error})"
-      return ${error}
-    fi
+    # ==================================================================
+    # Make an ISO from the Install app (using newer method if possible)
+    # ==================================================================
+    # (Credits to https://support.apple.com/hu-hu/HT201372 - only found Hungarian version)
 
     echo
     echo Create ${isoName} blank ISO image with a Single Partition - Apple Partition Map
@@ -59,39 +39,77 @@ function createISO()
     echo $ hdiutil attach /tmp/${isoName}.sparseimage -noverify -nobrowse -mountpoint /Volumes/install_build
     hdiutil attach /tmp/${isoName}.sparseimage -noverify -nobrowse -mountpoint /Volumes/install_build
 
-    echo
-    echo Restore the Base System into the ${isoName} ISO image
-    echo --------------------------------------------------------------------------
-    echo $ asr restore -source /Volumes/install_app/BaseSystem.dmg -target /Volumes/install_build -noprompt -noverify -erase
-    asr restore -source /Volumes/install_app/BaseSystem.dmg -target /Volumes/install_build -noprompt -noverify -erase
+    if [ -f /Applications/"${installerAppName}"/Contents/Resources/createinstallmedia ]; then
+      echo
+      echo Create install media sparse bundle: ${isoName}
+      echo --------------------------------------------------------------------------
 
-    echo
-    echo Remove Package link and replace with actual files
-    echo --------------------------------------------------------------------------
-    echo $ rm /Volumes/OS\ X\ Base\ System/System/Installation/Packages
-    rm /Volumes/OS\ X\ Base\ System/System/Installation/Packages
-    echo $ cp -rp /Volumes/install_app/Packages /Volumes/OS\ X\ Base\ System/System/Installation/
-    cp -rp /Volumes/install_app/Packages /Volumes/OS\ X\ Base\ System/System/Installation/
+      echo $ sudo /Applications/"${installerAppName}"/Contents/Resources/createinstallmedia --volume /Volumes/install_build --applicationpath "/Applications/${installerAppName}" --nointeraction
+      sudo /Applications/"${installerAppName}"/Contents/Resources/createinstallmedia --volume /Volumes/install_build --applicationpath "/Applications/${installerAppName}" --nointeraction
 
-    echo
-    echo Copy macOS ${isoName} installer dependencies
-    echo --------------------------------------------------------------------------
-    echo $ cp -rp /Volumes/install_app/BaseSystem.chunklist /Volumes/OS\ X\ Base\ System/BaseSystem.chunklist
-    cp -rp /Volumes/install_app/BaseSystem.chunklist /Volumes/OS\ X\ Base\ System/BaseSystem.chunklist
-    echo $ cp -rp /Volumes/install_app/BaseSystem.dmg /Volumes/OS\ X\ Base\ System/BaseSystem.dmg
-    cp -rp /Volumes/install_app/BaseSystem.dmg /Volumes/OS\ X\ Base\ System/BaseSystem.dmg
+      echo
+      echo Unmount the sparse bundle
+      echo -----------------------------------------------------------
 
-    echo
-    echo Unmount the installer image
-    echo --------------------------------------------------------------------------
-    echo $ hdiutil detach /Volumes/install_app
-    hdiutil detach /Volumes/install_app
+      echo hdiutil detach /Volumes/"${installerAppName%.*}"
+      hdiutil detach /Volumes/"${installerAppName%.*}"
+    else      
+      echo
+      echo Mount the installer image
+      echo -----------------------------------------------------------
 
-    echo
-    echo Unmount the sparse bundle
-    echo --------------------------------------------------------------------------
-    echo $ hdiutil detach /Volumes/OS\ X\ Base\ System/
-    hdiutil detach /Volumes/OS\ X\ Base\ System/
+      if [ -e "${installerAppName}" ] ; then
+        echo $ hdiutil attach "${installerAppName}"/Contents/SharedSupport/InstallESD.dmg -noverify -nobrowse -mountpoint /Volumes/install_app
+        hdiutil attach "${installerAppName}"/Contents/SharedSupport/InstallESD.dmg -noverify -nobrowse -mountpoint /Volumes/install_app
+        error=$?
+      elif [ -e /Applications/"${installerAppName}" ] ; then
+        echo $ hdiutil attach /Applications/"${installerAppName}"/Contents/SharedSupport/InstallESD.dmg -noverify -nobrowse -mountpoint /Volumes/install_app
+        hdiutil attach /Applications/"${installerAppName}"/Contents/SharedSupport/InstallESD.dmg -noverify -nobrowse -mountpoint /Volumes/install_app
+        error=$?
+      else
+        echo Installer Not found!
+        error=1
+      fi
+
+      if [ ${error} -ne 0 ] ; then
+        echo "Failed to mount the InstallESD.dmg from the instaler at ${installerAppName}. Exiting. (${error})"
+        return ${error}
+      fi
+
+      echo
+      echo Restore the Base System into the ${isoName} ISO image
+      echo --------------------------------------------------------------------------
+      echo $ asr restore -source /Volumes/install_app/BaseSystem.dmg -target /Volumes/install_build -noprompt -noverify -erase
+      asr restore -source /Volumes/install_app/BaseSystem.dmg -target /Volumes/install_build -noprompt -noverify -erase
+
+      echo
+      echo Remove Package link and replace with actual files
+      echo --------------------------------------------------------------------------
+      echo $ rm /Volumes/OS\ X\ Base\ System/System/Installation/Packages
+      rm /Volumes/OS\ X\ Base\ System/System/Installation/Packages
+      echo $ cp -rp /Volumes/install_app/Packages /Volumes/OS\ X\ Base\ System/System/Installation/
+      cp -rp /Volumes/install_app/Packages /Volumes/OS\ X\ Base\ System/System/Installation/
+
+      echo
+      echo Copy macOS ${isoName} installer dependencies
+      echo --------------------------------------------------------------------------
+      echo $ cp -rp /Volumes/install_app/BaseSystem.chunklist /Volumes/OS\ X\ Base\ System/BaseSystem.chunklist
+      cp -rp /Volumes/install_app/BaseSystem.chunklist /Volumes/OS\ X\ Base\ System/BaseSystem.chunklist
+      echo $ cp -rp /Volumes/install_app/BaseSystem.dmg /Volumes/OS\ X\ Base\ System/BaseSystem.dmg
+      cp -rp /Volumes/install_app/BaseSystem.dmg /Volumes/OS\ X\ Base\ System/BaseSystem.dmg
+
+      echo
+      echo Unmount the installer image
+      echo --------------------------------------------------------------------------
+      echo $ hdiutil detach /Volumes/install_app
+      hdiutil detach /Volumes/install_app
+
+      echo
+      echo Unmount the sparse bundle
+      echo --------------------------------------------------------------------------
+      echo $ hdiutil detach /Volumes/OS\ X\ Base\ System/
+      hdiutil detach /Volumes/OS\ X\ Base\ System/
+    fi
 
     echo
     echo Resize the partition in the sparse bundle to remove any free space
@@ -142,25 +160,24 @@ function installerExists()
 # Eject installer disk in case it was opened after download from App Store
 hdiutil info | grep /dev/disk | grep partition | cut -f 1 | xargs hdiutil detach -force
 
-# See if we can find either the ElCapitan or the Sierra installer.
+# See if we can any of these installers (in this particular order).
 # If successful, then create the iso file from the installer.
+# (Bash 3 'dictionary' credits goes to https://stackoverflow.com/a/4444733/3503324)
 
-installerExists "Install macOS Sierra.app"
-result=$?
-if [ ${result} -eq 0 ] ; then
-  createISO "Install macOS Sierra.app" "Sierra"
-else
-  installerExists "Install OS X El Capitan.app"
+knownInstallers=( "Install macOS 10.13 Beta.app:HighSierra"
+                  "Install macOS Sierra.app:Sierra"
+                  "Install OS X El Capitan.app:ElCapitain"
+                  "Install OS X Yosemite.app:Yosemite" )
+
+for installer in "${knownInstallers[@]}" ; do
+  installerAppName="${installer%%:*}"
+  isoName="${installer##*:}"
+
+  installerExists installerAppName
   result=$?
-  if [ ${result} -eq 0 ] ; then
-    createISO "Install OS X El Capitan.app" "ElCapitan"
-  else
-    installerExists "Install OS X Yosemite.app"
-    result=$?
-    if [ ${result} -eq 0 ] ; then
-      createISO "Install OS X Yosemite.app" "Yosemite"
-    else
-      echo "Could not find installer for Yosemite (10.10), El Capitan (10.11) or Sierra (10.12)."
-    fi
+  if [ ${result} -ne 0 ] ; then
+    createISO "${installerAppName}" "${isoName}"
+    exit
   fi
-fi
+done
+echo "Could not find installer for Yosemite (10.10), El Capitan (10.11), Sierra (10.12) or High Sierra (10.13)."
