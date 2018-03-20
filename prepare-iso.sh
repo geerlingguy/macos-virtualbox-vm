@@ -12,12 +12,14 @@
 # This function creates the ISO image for the user.
 # Inputs:  $1 = The name of the installer - located in your Applications folder or in your local folder/PATH.
 #          $2 = The Name of the ISO you want created.
+#          $3 = The absolute path for temporary files (optional, default: /tmp)
 #
 function createISO()
 {
-  if [ $# -eq 2 ] ; then
+  if [ $# -eq 3 ] ; then
     local installerAppName=${1}
     local isoName=${2}
+    local scratchPath=${3}
     local error=0
 
     # echo Debug: installerAppName = ${installerAppName} , isoName = ${isoName}
@@ -50,14 +52,14 @@ function createISO()
     echo
     echo Create ${isoName} blank ISO image with a Single Partition - Apple Partition Map
     echo --------------------------------------------------------------------------
-    echo $ hdiutil create -o /tmp/${isoName} -size 8g -layout SPUD -fs HFS+J -type SPARSE
-    hdiutil create -o /tmp/${isoName} -size 8g -layout SPUD -fs HFS+J -type SPARSE
+    echo $ hdiutil create -o $scratchPath/${isoName} -size 8g -layout SPUD -fs HFS+J -type SPARSE
+    hdiutil create -o $scratchPath/${isoName} -size 8g -layout SPUD -fs HFS+J -type SPARSE
 
     echo
     echo Mount the sparse bundle for package addition
     echo --------------------------------------------------------------------------
-    echo $ hdiutil attach /tmp/${isoName}.sparseimage -noverify -nobrowse -mountpoint /Volumes/install_build
-    hdiutil attach /tmp/${isoName}.sparseimage -noverify -nobrowse -mountpoint /Volumes/install_build
+    echo $ hdiutil attach $scratchPath/${isoName}.sparseimage -noverify -nobrowse -mountpoint /Volumes/install_build
+    hdiutil attach $scratchPath/${isoName}.sparseimage -noverify -nobrowse -mountpoint /Volumes/install_build
 
     echo
     echo Restore the Base System into the ${isoName} ISO image
@@ -96,26 +98,26 @@ function createISO()
     echo
     echo Resize the partition in the sparse bundle to remove any free space
     echo --------------------------------------------------------------------------
-    echo $ hdiutil resize -size `hdiutil resize -limits /tmp/${isoName}.sparseimage | tail -n 1 | awk '{ print $1 }'`b /tmp/${isoName}.sparseimage
-    hdiutil resize -size `hdiutil resize -limits /tmp/${isoName}.sparseimage | tail -n 1 | awk '{ print $1 }'`b /tmp/${isoName}.sparseimage
+    echo $ hdiutil resize -size `hdiutil resize -limits $scratchPath/${isoName}.sparseimage | tail -n 1 | awk '{ print $1 }'`b $scratchPath/${isoName}.sparseimage
+    hdiutil resize -size `hdiutil resize -limits $scratchPath/${isoName}.sparseimage | tail -n 1 | awk '{ print $1 }'`b $scratchPath/${isoName}.sparseimage
 
     echo
     echo Convert the sparse bundle to ISO/CD master
     echo --------------------------------------------------------------------------
-    echo $ hdiutil convert /tmp/${isoName}.sparseimage -format UDTO -o /tmp/${isoName}
-    hdiutil convert /tmp/${isoName}.sparseimage -format UDTO -o /tmp/${isoName}
+    echo $ hdiutil convert $scratchPath/${isoName}.sparseimage -format UDTO -o $scratchPath/${isoName}
+    hdiutil convert $scratchPath/${isoName}.sparseimage -format UDTO -o $scratchPath/${isoName}
 
     echo
     echo Remove the sparse bundle
     echo --------------------------------------------------------------------------
-    echo $ rm /tmp/${isoName}.sparseimage
-    rm /tmp/${isoName}.sparseimage
+    echo $ rm $scratchPath/${isoName}.sparseimage
+    rm $scratchPath/${isoName}.sparseimage
 
     echo
     echo Rename the ISO and move it to the desktop
     echo --------------------------------------------------------------------------
-    echo $ mv /tmp/${isoName}.cdr ~/Desktop/${isoName}.iso
-    mv /tmp/${isoName}.cdr ~/Desktop/${isoName}.iso
+    echo $ mv $scratchPath/${isoName}.cdr ${isoName}
+    mv $scratchPath/${isoName}.cdr ${isoName}
   fi
 }
 
@@ -142,25 +144,56 @@ function installerExists()
 # Eject installer disk in case it was opened after download from App Store
 hdiutil info | grep /dev/disk | grep partition | cut -f 1 | xargs hdiutil detach -force
 
-# See if we can find either the ElCapitan or the Sierra installer.
-# If successful, then create the iso file from the installer.
-
-installerExists "Install macOS Sierra.app"
-result=$?
-if [ ${result} -eq 0 ] ; then
-  createISO "Install macOS Sierra.app" "Sierra"
+scratchPath="/tmp"
+if [ $# -gt 0 ] ; then
+  installerAppPath=$1
+  installerAppName=$(basename "$installerAppPath")
 else
-  installerExists "Install OS X El Capitan.app"
+  installerExists "Install macOS Sierra.app"
   result=$?
   if [ ${result} -eq 0 ] ; then
-    createISO "Install OS X El Capitan.app" "ElCapitan"
+    installerAppName="Install macOS Sierra.app"
   else
-    installerExists "Install OS X Yosemite.app"
+    installerExists "Install OS X El Capitan.app"
     result=$?
     if [ ${result} -eq 0 ] ; then
-      createISO "Install OS X Yosemite.app" "Yosemite"
+      installerAppName="Install OS X El Capitan.app"
     else
-      echo "Could not find installer for Yosemite (10.10), El Capitan (10.11) or Sierra (10.12)."
+      installerExists "Install OS X Yosemite.app"
+      result=$?
+      if [ ${result} -eq 0 ] ; then
+        installerAppName="Install OS X Yosemite.app"
+      else
+        echo "Could not find installer for Yosemite (10.10), El Capitan (10.11) or Sierra (10.12)."
+        exit 1
+      fi
+    fi
+  fi
+  installerAppPath=$installerAppName
+fi
+
+# Get destination ISO path (can be passed as optional second command-line parameter)
+
+if [ $# -gt 1 ] ; then
+  isoName=$2
+else
+  if [ "$installerAppName" == "Install macOS Sierra.app" ] ; then
+    isoName="~/Desktop/Sierra.iso"
+  else
+    if [ "$installerAppName" == "Install OS X El Capitan.app" ] ; then
+      isoName="~/Desktop/ElCapitan.iso"
+    else
+      if [ "$installerAppName" == "Install OS X Yosemite.app" ] ; then
+        isoName="~/Desktop/Yosemite.iso"
+      fi
     fi
   fi
 fi
+
+# A scratch path (rather than the default /tmp) can be passed via command line
+
+if [ $# -gt 2 ] ; then
+  scratchPath=$3
+fi
+
+createISO "$installerAppPath" "$isoName" "$scratchPath"
