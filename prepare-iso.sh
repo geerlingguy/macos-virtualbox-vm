@@ -118,7 +118,7 @@ function createISO()
     hdiutil resize -size `hdiutil resize -limits /tmp/${isoName}.sparseimage | tail -n 1 | awk '{ print $1 }'`b /tmp/${isoName}.sparseimage
 
     echo
-    echo Convert ${isoName} the sparse bundle to ISO/CD master
+    echo Convert the ${isoName} sparse bundle to ISO/CD master
     echo --------------------------------------------------------------------------
     echo $ time hdiutil convert /tmp/${isoName}.sparseimage -format UDTO -o /tmp/${isoName}
     time hdiutil convert /tmp/${isoName}.sparseimage -format UDTO -o /tmp/${isoName}
@@ -158,9 +158,9 @@ function installerExists()
 # Main script code
 #
 # Eject installer disk in case it was opened after download from App Store
-hdiutil info | grep /dev/disk | grep partition | cut -f 1 | xargs --no-run-if-empty hdiutil detach -force
+hdiutil info | grep /dev/disk | (grep partition || echo :) | cut -f 1 | xargs hdiutil detach -force
 
-# See if we can find an elligible installer.
+# See if we can find an eligible installer.
 # If successful, then create the iso file from the installer.
 
 installerExists "Install macOS High Sierra.app"
@@ -183,7 +183,7 @@ else
       if [ ${result} -eq 0 ] ; then
         createISO "Install OS X Yosemite.app" "Yosemite"
       else
-        echo "Could not find installer for Yosemite (10.10), El Capitan (10.11), Sierra (10.12) or High Sierra (10.13)."
+        echo "Could not find installer for Yosemite (10.10), El Capitan (10.11), Sierra (10.12), or High Sierra (10.13)."
       fi
     fi
   fi
