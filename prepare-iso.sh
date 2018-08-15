@@ -1,10 +1,9 @@
 #!/bin/bash
-
 #
-# This script will create a bootable ISO image from the installer application for El Capitan (10.11) or the new Sierra (10.12) macOS.
-# Restructured a bit, and adapted the 10.11 script from this URL:
-# https://forums.virtualbox.org/viewtopic.php?f=22&t=77068&p=358865&hilit=elCapitan+iso#p358865
-#
+# This script will create a bootable ISO image from the installer application for
+# - El Capitan (10.11)
+# - Sierra (10.12)
+# - High Sierra (10.13)
 
 #
 # createISO
@@ -22,9 +21,6 @@ function createISO()
 
     # echo Debug: installerAppName = ${installerAppName} , isoName = ${isoName}
 
-    # ==============================================================
-    # 10.11 & 10.12: How to make an ISO from the Install app
-    # ==============================================================
     echo
     echo Mount the installer image
     echo -----------------------------------------------------------
@@ -37,6 +33,7 @@ function createISO()
       echo $ hdiutil attach /Applications/"${installerAppName}"/Contents/SharedSupport/InstallESD.dmg -noverify -nobrowse -mountpoint /Volumes/install_app
       hdiutil attach /Applications/"${installerAppName}"/Contents/SharedSupport/InstallESD.dmg -noverify -nobrowse -mountpoint /Volumes/install_app
       error=$?
+      installerAppName="/Applications/${installerAppName}"
     else
       echo Installer Not found!
       error=1
@@ -62,24 +59,41 @@ function createISO()
     echo
     echo Restore the Base System into the ${isoName} ISO image
     echo --------------------------------------------------------------------------
-    echo $ asr restore -source /Volumes/install_app/BaseSystem.dmg -target /Volumes/install_build -noprompt -noverify -erase
-    asr restore -source /Volumes/install_app/BaseSystem.dmg -target /Volumes/install_build -noprompt -noverify -erase
+    if [ "${isoName}" == "HighSierra" ] ; then
+      echo $ asr restore -source "${installerAppName}"/Contents/SharedSupport/BaseSystem.dmg -target /Volumes/install_build -noprompt -noverify -erase
+      asr restore -source "${installerAppName}"/Contents/SharedSupport/BaseSystem.dmg -target /Volumes/install_build -noprompt -noverify -erase
+    else
+      echo $ asr restore -source /Volumes/install_app/BaseSystem.dmg -target /Volumes/install_build -noprompt -noverify -erase
+      asr restore -source /Volumes/install_app/BaseSystem.dmg -target /Volumes/install_build -noprompt -noverify -erase
+    fi
 
     echo
     echo Remove Package link and replace with actual files
     echo --------------------------------------------------------------------------
-    echo $ rm /Volumes/OS\ X\ Base\ System/System/Installation/Packages
-    rm /Volumes/OS\ X\ Base\ System/System/Installation/Packages
-    echo $ cp -Rp /Volumes/install_app/Packages /Volumes/OS\ X\ Base\ System/System/Installation/
-    cp -Rp /Volumes/install_app/Packages /Volumes/OS\ X\ Base\ System/System/Installation/
+    if [ "${isoName}" == "HighSierra" ] ; then
+      echo $ ditto -V /Volumes/install_app/Packages /Volumes/OS\ X\ Base\ System/System/Installation/
+      ditto -V /Volumes/install_app/Packages /Volumes/OS\ X\ Base\ System/System/Installation/
+    else
+      echo $ rm /Volumes/OS\ X\ Base\ System/System/Installation/Packages
+      rm /Volumes/OS\ X\ Base\ System/System/Installation/Packages
+      echo $ cp -rp /Volumes/install_app/Packages /Volumes/OS\ X\ Base\ System/System/Installation/
+      cp -rp /Volumes/install_app/Packages /Volumes/OS\ X\ Base\ System/System/Installation/
+    fi
 
     echo
     echo Copy macOS ${isoName} installer dependencies
     echo --------------------------------------------------------------------------
-    echo $ cp -Rp /Volumes/install_app/BaseSystem.chunklist /Volumes/OS\ X\ Base\ System/BaseSystem.chunklist
-    cp -Rp /Volumes/install_app/BaseSystem.chunklist /Volumes/OS\ X\ Base\ System/BaseSystem.chunklist
-    echo $ cp -Rp /Volumes/install_app/BaseSystem.dmg /Volumes/OS\ X\ Base\ System/BaseSystem.dmg
-    cp -Rp /Volumes/install_app/BaseSystem.dmg /Volumes/OS\ X\ Base\ System/BaseSystem.dmg
+    if [ "${isoName}" == "HighSierra" ] ; then
+      echo $ ditto -V "${installerAppName}"/Contents/SharedSupport/BaseSystem.chunklist /Volumes/OS\ X\ Base\ System/BaseSystem.chunklist
+      ditto -V "${installerAppName}"/Contents/SharedSupport/BaseSystem.chunklist /Volumes/OS\ X\ Base\ System/BaseSystem.chunklist
+      echo $ ditto -V "${installerAppName}"/Contents/SharedSupport/BaseSystem.dmg /Volumes/OS\ X\ Base\ System/BaseSystem.dmg
+      ditto -V "${installerAppName}"/Contents/SharedSupport/BaseSystem.dmg /Volumes/OS\ X\ Base\ System/BaseSystem.dmg
+    else
+      echo $ cp -rp /Volumes/install_app/BaseSystem.chunklist /Volumes/OS\ X\ Base\ System/BaseSystem.chunklist
+      cp -rp /Volumes/install_app/BaseSystem.chunklist /Volumes/OS\ X\ Base\ System/BaseSystem.chunklist
+      echo $ cp -rp /Volumes/install_app/BaseSystem.dmg /Volumes/OS\ X\ Base\ System/BaseSystem.dmg
+      cp -rp /Volumes/install_app/BaseSystem.dmg /Volumes/OS\ X\ Base\ System/BaseSystem.dmg
+    fi
 
     echo
     echo Unmount the installer image
@@ -100,7 +114,7 @@ function createISO()
     hdiutil resize -size `hdiutil resize -limits /tmp/${isoName}.sparseimage | tail -n 1 | awk '{ print $1 }'`b /tmp/${isoName}.sparseimage
 
     echo
-    echo Convert the sparse bundle to ISO/CD master
+    echo Convert the ${isoName} sparse bundle to ISO/CD master
     echo --------------------------------------------------------------------------
     echo $ hdiutil convert /tmp/${isoName}.sparseimage -format UDTO -o /tmp/${isoName}
     hdiutil convert /tmp/${isoName}.sparseimage -format UDTO -o /tmp/${isoName}
@@ -140,30 +154,34 @@ function installerExists()
 # Main script code
 #
 # Eject installer disk in case it was opened after download from App Store
-# added support for multiple disks
 for disk in $(hdiutil info | grep /dev/disk | grep partition | cut -f 1); do
   hdiutil detach -force ${disk}
 done
 
-# See if we can find either the ElCapitan or the Sierra installer.
+# See if we can find an eligible installer.
 # If successful, then create the iso file from the installer.
-
-installerExists "Install macOS Sierra.app"
+installerExists "Install macOS High Sierra.app"
 result=$?
 if [ ${result} -eq 0 ] ; then
-  createISO "Install macOS Sierra.app" "Sierra"
+  createISO "Install macOS High Sierra.app" "HighSierra"
 else
-  installerExists "Install OS X El Capitan.app"
+  installerExists "Install macOS Sierra.app"
   result=$?
   if [ ${result} -eq 0 ] ; then
-    createISO "Install OS X El Capitan.app" "ElCapitan"
+    createISO "Install macOS Sierra.app" "Sierra"
   else
-    installerExists "Install OS X Yosemite.app"
+    installerExists "Install OS X El Capitan.app"
     result=$?
     if [ ${result} -eq 0 ] ; then
-      createISO "Install OS X Yosemite.app" "Yosemite"
+      createISO "Install OS X El Capitan.app" "ElCapitan"
     else
-      echo "Could not find installer for Yosemite (10.10), El Capitan (10.11) or Sierra (10.12)."
+      installerExists "Install OS X Yosemite.app"
+      result=$?
+      if [ ${result} -eq 0 ] ; then
+        createISO "Install OS X Yosemite.app" "Yosemite"
+      else
+        echo "Could not find installer for Yosemite (10.10), El Capitan (10.11), Sierra (10.12), or High Sierra (10.13)."
+      fi
     fi
   fi
 fi
