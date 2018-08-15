@@ -63,8 +63,8 @@ function createISO()
     echo Restore the Base System into the ${isoName} ISO image
     echo --------------------------------------------------------------------------
     if [ "${isoName}" == "HighSierra" ] ; then
-      echo $ time asr restore -source "${installerAppName}"/Contents/SharedSupport/BaseSystem.dmg -target /Volumes/install_build -noprompt -noverify -erase
-      time asr restore -source "${installerAppName}"/Contents/SharedSupport/BaseSystem.dmg -target /Volumes/install_build -noprompt -noverify -erase
+      echo $ asr restore -source "${installerAppName}"/Contents/SharedSupport/BaseSystem.dmg -target /Volumes/install_build -noprompt -noverify -erase
+      asr restore -source "${installerAppName}"/Contents/SharedSupport/BaseSystem.dmg -target /Volumes/install_build -noprompt -noverify -erase
     else
       echo $ asr restore -source /Volumes/install_app/BaseSystem.dmg -target /Volumes/install_build -noprompt -noverify -erase
       asr restore -source /Volumes/install_app/BaseSystem.dmg -target /Volumes/install_build -noprompt -noverify -erase
@@ -74,8 +74,8 @@ function createISO()
     echo Remove Package link and replace with actual files
     echo --------------------------------------------------------------------------
     if [ "${isoName}" == "HighSierra" ] ; then
-      echo $ time ditto -V /Volumes/install_app/Packages /Volumes/OS\ X\ Base\ System/System/Installation/
-      time ditto -V /Volumes/install_app/Packages /Volumes/OS\ X\ Base\ System/System/Installation/
+      echo $ ditto -V /Volumes/install_app/Packages /Volumes/OS\ X\ Base\ System/System/Installation/
+      ditto -V /Volumes/install_app/Packages /Volumes/OS\ X\ Base\ System/System/Installation/
     else
       echo $ rm /Volumes/OS\ X\ Base\ System/System/Installation/Packages
       rm /Volumes/OS\ X\ Base\ System/System/Installation/Packages
@@ -89,8 +89,8 @@ function createISO()
     if [ "${isoName}" == "HighSierra" ] ; then
       echo $ ditto -V "${installerAppName}"/Contents/SharedSupport/BaseSystem.chunklist /Volumes/OS\ X\ Base\ System/BaseSystem.chunklist
       ditto -V "${installerAppName}"/Contents/SharedSupport/BaseSystem.chunklist /Volumes/OS\ X\ Base\ System/BaseSystem.chunklist
-      echo $ time ditto -V "${installerAppName}"/Contents/SharedSupport/BaseSystem.dmg /Volumes/OS\ X\ Base\ System/BaseSystem.dmg
-      time ditto -V "${installerAppName}"/Contents/SharedSupport/BaseSystem.dmg /Volumes/OS\ X\ Base\ System/BaseSystem.dmg
+      echo $ ditto -V "${installerAppName}"/Contents/SharedSupport/BaseSystem.dmg /Volumes/OS\ X\ Base\ System/BaseSystem.dmg
+      ditto -V "${installerAppName}"/Contents/SharedSupport/BaseSystem.dmg /Volumes/OS\ X\ Base\ System/BaseSystem.dmg
     else
       echo $ cp -rp /Volumes/install_app/BaseSystem.chunklist /Volumes/OS\ X\ Base\ System/BaseSystem.chunklist
       cp -rp /Volumes/install_app/BaseSystem.chunklist /Volumes/OS\ X\ Base\ System/BaseSystem.chunklist
@@ -119,8 +119,8 @@ function createISO()
     echo
     echo Convert the ${isoName} sparse bundle to ISO/CD master
     echo --------------------------------------------------------------------------
-    echo $ time hdiutil convert /tmp/${isoName}.sparseimage -format UDTO -o /tmp/${isoName}
-    time hdiutil convert /tmp/${isoName}.sparseimage -format UDTO -o /tmp/${isoName}
+    echo $ hdiutil convert /tmp/${isoName}.sparseimage -format UDTO -o /tmp/${isoName}
+    hdiutil convert /tmp/${isoName}.sparseimage -format UDTO -o /tmp/${isoName}
 
     echo
     echo Remove the sparse bundle
