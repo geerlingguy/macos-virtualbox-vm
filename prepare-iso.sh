@@ -2,8 +2,8 @@
 #
 # This script will create a bootable ISO image from the installer application for
 # - El Capitan (10.11)
-# - Sierra (10.12) macOS
-# - High Sierra (10.13) macOS
+# - Sierra (10.12)
+# - High Sierra (10.13)
 
 #
 # createISO
@@ -21,9 +21,6 @@ function createISO()
 
     # echo Debug: installerAppName = ${installerAppName} , isoName = ${isoName}
 
-    # ==============================================================
-    # 10.11 & 10.12: How to make an ISO from the Install app
-    # ==============================================================
     echo
     echo Mount the installer image
     echo -----------------------------------------------------------
