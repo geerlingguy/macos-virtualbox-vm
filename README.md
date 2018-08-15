@@ -1,10 +1,10 @@
 # macOS VirtualBox VM Instructions
 
-Current macOS version: *Sierra (10.12)*, tested with VirtualBox *5.1.6 r110634*
+Current macOS version: *High Sierra (10.13)*, tested with VirtualBox *5.1.28 r117968*
 
 To build a VM running macOS, follow the directions below:
 
-  1. Download the installer from Mac App Store (it should be available in the 'Purchases' section if you've acquired it previously). The installer will be placed in your Applications folder. (Should work for Yosemite, El Capitan and Sierra - 10.10-10.12.).
+  1. Download the installer from Mac App Store (it should be available in the 'Purchases' section if you've acquired it previously). The installer will be placed in your Applications folder. (Should work for Yosemite, El Capitan, Sierra and High Sierra - 10.10-10.13.).
       - **Note**: On newer hardware, you might not be able to download older OS releases that Apple doesn't support on the newer hardware (e.g. the 2016 MacBook Pro can only download 10.12 Sierra or later). In this case, you need to use an older Mac to download the older OS.
   2. Make the script executable and run it: `chmod +x prepare-iso.sh && ./prepare-iso.sh`.
 
@@ -37,6 +37,15 @@ To build a VM running macOS, follow the directions below:
 - The default Video Memory of 16MB is far below Apple's official requirement of 128MB. Increasing this value may help if you run into problems and is also the most effective performance tuning.
 - Depending on your hardware, you may also want to increase RAM and the share of CPU power the VM is allowed to use.
 - When the installation is complete, and you have a fresh new macOS VM, you can shut it down and create a snapshot. This way, you can go back to the initial state in the future. I use this technique to test the [`mac-dev-playbook`](https://github.com/geerlingguy/mac-dev-playbook), which I use to set up and configure my own Mac workstation for web and app development.
+- If for High Sierra you can not find the VirtualBox disk created inside the Disk Utility select `View -> Show All Devices` and format the newly visible device ([Source: tinyapps.org](https://tinyapps.org/blog/mac/201710010700_high_sierra_disk_utility.html)).
+- If for High Sierra you encounter boot / EFI problems, restart the VM and hit `F12` to get to the VirtualBox boot manager.  Select **EFI In-Terminal Shell** and run:
+```bash
+Shell> fs1:
+FS1:\> cd "macOS Install Data"
+FS1:\macOS Install Data\> cd "Locked Files"
+FS1:\macOS Install Data\Locked Files\> cd "Boot Files"
+FS1:\macOS Install Data\Locked Files\Boot Files\> boot.efi
+```
 
 ## Larger VM Screen Resolution
 
