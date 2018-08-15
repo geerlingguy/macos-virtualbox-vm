@@ -145,22 +145,27 @@ hdiutil info | grep /dev/disk | grep partition | cut -f 1 | xargs hdiutil detach
 # See if we can find either the ElCapitan or the Sierra installer.
 # If successful, then create the iso file from the installer.
 
-installerExists "Install macOS Sierra.app"
+installerExists "Install macOS High Sierra.app"
 result=$?
 if [ ${result} -eq 0 ] ; then
-  createISO "Install macOS Sierra.app" "Sierra"
-else
-  installerExists "Install OS X El Capitan.app"
-  result=$?
-  if [ ${result} -eq 0 ] ; then
-    createISO "Install OS X El Capitan.app" "ElCapitan"
-  else
-    installerExists "Install OS X Yosemite.app"
-    result=$?
-    if [ ${result} -eq 0 ] ; then
-      createISO "Install OS X Yosemite.app" "Yosemite"
-    else
-      echo "Could not find installer for Yosemite (10.10), El Capitan (10.11) or Sierra (10.12)."
+  createISO "Install macOS High Sierra.app" "HighSierra"
+  else 
+    installerExists "Install macOS Sierra.app" "HighSierra"
+      if [ ${result} -eq 0 ] ; then
+        createISO "Install macOS Sierra.app" "Sierra"
+        else
+        installerExists "Install OS X El Capitan.app"
+        result=$?
+          if [ ${result} -eq 0 ] ; then
+            createISO "Install OS X El Capitan.app" "ElCapitan"
+            else
+              installerExists "Install OS X Yosemite.app"
+            result=$?
+              if [ ${result} -eq 0 ] ; then
+                createISO "Install OS X Yosemite.app" "Yosemite"
+              else
+        echo "Could not find installer for Yosemite (10.10), El Capitan (10.11) or Sierra (10.12)."
+      fi
     fi
   fi
 fi
