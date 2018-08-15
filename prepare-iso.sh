@@ -70,16 +70,16 @@ function createISO()
     echo --------------------------------------------------------------------------
     echo $ rm /Volumes/OS\ X\ Base\ System/System/Installation/Packages
     rm /Volumes/OS\ X\ Base\ System/System/Installation/Packages
-    echo $ cp -rp /Volumes/install_app/Packages /Volumes/OS\ X\ Base\ System/System/Installation/
-    cp -rp /Volumes/install_app/Packages /Volumes/OS\ X\ Base\ System/System/Installation/
+    echo $ cp -Rp /Volumes/install_app/Packages /Volumes/OS\ X\ Base\ System/System/Installation/
+    cp -Rp /Volumes/install_app/Packages /Volumes/OS\ X\ Base\ System/System/Installation/
 
     echo
     echo Copy macOS ${isoName} installer dependencies
     echo --------------------------------------------------------------------------
-    echo $ cp -rp /Volumes/install_app/BaseSystem.chunklist /Volumes/OS\ X\ Base\ System/BaseSystem.chunklist
-    cp -rp /Volumes/install_app/BaseSystem.chunklist /Volumes/OS\ X\ Base\ System/BaseSystem.chunklist
-    echo $ cp -rp /Volumes/install_app/BaseSystem.dmg /Volumes/OS\ X\ Base\ System/BaseSystem.dmg
-    cp -rp /Volumes/install_app/BaseSystem.dmg /Volumes/OS\ X\ Base\ System/BaseSystem.dmg
+    echo $ cp -Rp /Volumes/install_app/BaseSystem.chunklist /Volumes/OS\ X\ Base\ System/BaseSystem.chunklist
+    cp -Rp /Volumes/install_app/BaseSystem.chunklist /Volumes/OS\ X\ Base\ System/BaseSystem.chunklist
+    echo $ cp -Rp /Volumes/install_app/BaseSystem.dmg /Volumes/OS\ X\ Base\ System/BaseSystem.dmg
+    cp -Rp /Volumes/install_app/BaseSystem.dmg /Volumes/OS\ X\ Base\ System/BaseSystem.dmg
 
     echo
     echo Unmount the installer image
