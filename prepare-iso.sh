@@ -12,6 +12,9 @@
 # Inputs:  $1 = The name of the installer - located in your Applications folder or in your local folder/PATH.
 #          $2 = The Name of the ISO you want created.
 #
+
+set -e
+
 function createISO()
 {
   if [ $# -eq 2 ] ; then
@@ -59,7 +62,7 @@ function createISO()
     echo
     echo Restore the Base System into the ${isoName} ISO image
     echo --------------------------------------------------------------------------
-    if [ "${isoName}" == "HighSierra" ] ; then
+    if [ "${isoName}" == "HighSierra" ] || [ "${isoName}" == "Mojave" ] ; then
       echo $ asr restore -source "${installerAppName}"/Contents/SharedSupport/BaseSystem.dmg -target /Volumes/install_build -noprompt -noverify -erase
       asr restore -source "${installerAppName}"/Contents/SharedSupport/BaseSystem.dmg -target /Volumes/install_build -noprompt -noverify -erase
     else
@@ -70,7 +73,7 @@ function createISO()
     echo
     echo Remove Package link and replace with actual files
     echo --------------------------------------------------------------------------
-    if [ "${isoName}" == "HighSierra" ] ; then
+    if [ "${isoName}" == "HighSierra" ] || [ "${isoName}" == "Mojave" ] ; then
       echo $ ditto -V /Volumes/install_app/Packages /Volumes/OS\ X\ Base\ System/System/Installation/
       ditto -V /Volumes/install_app/Packages /Volumes/OS\ X\ Base\ System/System/Installation/
     else
@@ -83,7 +86,7 @@ function createISO()
     echo
     echo Copy macOS ${isoName} installer dependencies
     echo --------------------------------------------------------------------------
-    if [ "${isoName}" == "HighSierra" ] ; then
+    if [ "${isoName}" == "HighSierra" ] || [ "${isoName}" == "Mojave" ] ; then
       echo $ ditto -V "${installerAppName}"/Contents/SharedSupport/BaseSystem.chunklist /Volumes/OS\ X\ Base\ System/BaseSystem.chunklist
       ditto -V "${installerAppName}"/Contents/SharedSupport/BaseSystem.chunklist /Volumes/OS\ X\ Base\ System/BaseSystem.chunklist
       echo $ ditto -V "${installerAppName}"/Contents/SharedSupport/BaseSystem.dmg /Volumes/OS\ X\ Base\ System/BaseSystem.dmg
