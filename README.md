@@ -45,13 +45,15 @@ To build a VM running macOS, follow the directions below:
   - If for High Sierra you can not find the VirtualBox disk created inside the Disk Utility select `View -> Show All Devices` and format the newly visible device ([Source: tinyapps.org](https://tinyapps.org/blog/mac/201710010700_high_sierra_disk_utility.html)).
   - If for High Sierra you encounter boot / EFI problems, restart the VM and hit `F12` to get to the VirtualBox boot manager. Select **EFI In-Terminal Shell** and run:
 
-          ```bash
           Shell> fs1:
           FS1:\> cd "macOS Install Data"
           FS1:\macOS Install Data\> cd "Locked Files"
           FS1:\macOS Install Data\Locked Files\> cd "Boot Files"
           FS1:\macOS Install Data\Locked Files\Boot Files\> boot.efi
-          ```
+
+  - If keyboard and mouse do not work inside the VM:
+    1. Ensure the VirtualBox Extension Pack is installed.
+    2. In the VM settings, under `Ports > USB`, select `USB 3.0 (xHCI) Control`.
 
 ## Larger VM Screen Resolution
 
