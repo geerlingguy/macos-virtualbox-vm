@@ -1,9 +1,14 @@
 #!/bin/bash
 #
-# This script will create a bootable ISO image from the installer application for
-# - El Capitan (10.11)
-# - Sierra (10.12)
-# - High Sierra (10.13)
+# This script will create a bootable ISO image from the installer app for:
+#
+#   - Yosemite (10.10)
+#   - El Capitan (10.11)
+#   - Sierra (10.12)
+#   - High Sierra (10.13)
+#   - Mojave (10.14)
+
+set -e
 
 #
 # createISO
@@ -11,10 +16,6 @@
 # This function creates the ISO image for the user.
 # Inputs:  $1 = The name of the installer - located in your Applications folder or in your local folder/PATH.
 #          $2 = The Name of the ISO you want created.
-#
-
-set -e
-
 function createISO()
 {
   if [ $# -eq 2 ] ; then
