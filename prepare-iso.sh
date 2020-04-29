@@ -164,29 +164,20 @@ done
 
 # See if we can find an eligible installer.
 # If successful, then create the iso file from the installer.
-installerExists "Install macOS Mojave.app"
-result=$?
-if [ ${result} -eq 0 ] ; then
+
+if installerExists "Install macOS Mojave.app" ; then
   createISO "Install macOS Mojave.app" "Mojave"
 else
-  installerExists "Install macOS High Sierra.app"
-  result=$?
-  if [ ${result} -eq 0 ] ; then
+  if installerExists "Install macOS High Sierra.app" ; then
     createISO "Install macOS High Sierra.app" "HighSierra"
   else
-    installerExists "Install macOS Sierra.app"
-    result=$?
-    if [ ${result} -eq 0 ] ; then
+    if installerExists "Install macOS Sierra.app" ; then
       createISO "Install macOS Sierra.app" "Sierra"
     else
-      installerExists "Install OS X El Capitan.app"
-      result=$?
-      if [ ${result} -eq 0 ] ; then
+      if installerExists "Install OS X El Capitan.app" ; then
         createISO "Install OS X El Capitan.app" "ElCapitan"
       else
-        installerExists "Install OS X Yosemite.app"
-        result=$?
-        if [ ${result} -eq 0 ] ; then
+        if installerExists "Install OS X Yosemite.app" ; then
           createISO "Install OS X Yosemite.app" "Yosemite"
         else
           echo "Could not find installer for Yosemite (10.10), El Capitan (10.11), Sierra (10.12), High Sierra (10.13) or Mojave (10.14)."
