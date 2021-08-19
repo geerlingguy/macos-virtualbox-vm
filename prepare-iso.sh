@@ -70,8 +70,8 @@ function createISO()
     if [ "${isoName}" == "HighSierra" ] || [ "${isoName}" == "Mojave" ] || [ "${isoName}" == "Catalina" ] ; then
       echo $ asr restore -source "${installerAppName}"/Contents/SharedSupport/BaseSystem.dmg -target /Volumes/install_build -noprompt -noverify -erase
       #following asr command returns an error and prints:
-      #"Personalization succeeded
-      #"asr: Couldn't personalize volume /Volumes/macOS Base System - Operation not permitted
+      #"Personalization succeeded"
+      #"asr: Couldn't personalize volume /Volumes/macOS Base System - Operation not permitted"
       #I disabled SIP and the error still occurs.
       #This was reported in Issue #73 for Mojave
       #I added ||true for now to prevent the script from exiting as the steps that follow still seem to work fine for Catalina
@@ -188,25 +188,29 @@ done
 # See if we can find an eligible installer.
 # If successful, then create the iso file from the installer.
 
-if installerExists "Install macOS Catalina.app" ; then
-  createISO "Install macOS Catalina.app" "Catalina"
+if installerExists "Install macOS Big Sur.app" ; then
+  createISO "Install macOS Big Sur.app" "BigSur"
 else
-  if installerExists "Install macOS Mojave.app" ; then
-    createISO "Install macOS Mojave.app" "Mojave"
+  if installerExists "Install macOS Catalina.app" ; then
+    createISO "Install macOS Catalina.app" "Catalina"
   else
-    if installerExists "Install macOS High Sierra.app" ; then
-      createISO "Install macOS High Sierra.app" "HighSierra"
+    if installerExists "Install macOS Mojave.app" ; then
+      createISO "Install macOS Mojave.app" "Mojave"
     else
-      if installerExists "Install macOS Sierra.app" ; then
-        createISO "Install macOS Sierra.app" "Sierra"
+      if installerExists "Install macOS High Sierra.app" ; then
+        createISO "Install macOS High Sierra.app" "HighSierra"
       else
-        if installerExists "Install OS X El Capitan.app" ; then
-          createISO "Install OS X El Capitan.app" "ElCapitan"
+        if installerExists "Install macOS Sierra.app" ; then
+          createISO "Install macOS Sierra.app" "Sierra"
         else
-          if installerExists "Install OS X Yosemite.app" ; then
-            createISO "Install OS X Yosemite.app" "Yosemite"
+          if installerExists "Install OS X El Capitan.app" ; then
+            createISO "Install OS X El Capitan.app" "ElCapitan"
           else
-            echo "Could not find installer for Yosemite (10.10), El Capitan (10.11), Sierra (10.12), High Sierra (10.13), Mojave (10.14) or Catalina (10.15)."
+            if installerExists "Install OS X Yosemite.app" ; then
+              createISO "Install OS X Yosemite.app" "Yosemite"
+            else
+              echo "Could not find installer for Yosemite (10.10), El Capitan (10.11), Sierra (10.12), High Sierra (10.13), Mojave (10.14), Catalina (10.15) or Big Sur (11.0)."
+            fi
           fi
         fi
       fi
