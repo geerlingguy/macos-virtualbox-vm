@@ -27,10 +27,22 @@ function createISO()
     # echo Debug: installerAppName = ${installerAppName} , isoName = ${isoName}
 
     echo
+    echo Create ${isoName} blank ISO image with a Single Partition - Apple Partition Map
+    echo --------------------------------------------------------------------------
+    # Just in case - delete any previous sparseimage
+    [ -e /tmp/${isoName}.sparseimage ] && rm -f /tmp/${isoName}.sparseimage
+    # increased size to 16G - 8G is too small for Catalina
+    echo $ hdiutil create -o /tmp/${isoName} -size 16g -layout SPUD -fs HFS+J -type SPARSE
+    hdiutil create -o /tmp/${isoName} -size 16g -layout SPUD -fs HFS+J -type SPARSE
+
+    echo
     echo Mount the installer image
     echo -----------------------------------------------------------
 
-    if [ -e "${installerAppName}" ] ; then
+    if [ "${isoName}" == "BigSur" ] ; then
+      echo $ hdiutil attach /tmp/${isoName}.sparseimage -noverify -nobrowse -mountpoint /Volumes/install_app
+      hdiutil attach /tmp/${isoName}.sparseimage -noverify -nobrowse -mountpoint /Volumes/install_app
+    elif [ -e "${installerAppName}" ] ; then
       echo $ hdiutil attach "${installerAppName}"/Contents/SharedSupport/InstallESD.dmg -noverify -nobrowse -mountpoint /Volumes/install_app
       hdiutil attach "${installerAppName}"/Contents/SharedSupport/InstallESD.dmg -noverify -nobrowse -mountpoint /Volumes/install_app
       error=$?
@@ -45,29 +57,24 @@ function createISO()
     fi
 
     if [ ${error} -ne 0 ] ; then
-      echo "Failed to mount the InstallESD.dmg from the instaler at ${installerAppName}.  Exiting. (${error})"
+      echo "Failed to mount the InstallESD.dmg from the installer at ${installerAppName}.  Exiting. (${error})"
       return ${error}
     fi
 
-    echo
-    echo Create ${isoName} blank ISO image with a Single Partition - Apple Partition Map
-    echo --------------------------------------------------------------------------
-    # Just in case - delete any previous sparseimage
-    [ -e /tmp/${isoName}.sparseimage ] && rm -f /tmp/${isoName}.sparseimage
-    # increased size to 16G - 8G is too small for Catalina
-    echo $ hdiutil create -o /tmp/${isoName} -size 16g -layout SPUD -fs HFS+J -type SPARSE
-    hdiutil create -o /tmp/${isoName} -size 16g -layout SPUD -fs HFS+J -type SPARSE
-
-    echo
-    echo Mount the sparse bundle for package addition
-    echo --------------------------------------------------------------------------
-    echo $ hdiutil attach /tmp/${isoName}.sparseimage -noverify -nobrowse -mountpoint /Volumes/install_build
-    hdiutil attach /tmp/${isoName}.sparseimage -noverify -nobrowse -mountpoint /Volumes/install_build
+    if [ "${isoName}" != "BigSur" ] ; then
+      echo
+      echo Mount the sparse bundle for package addition
+      echo --------------------------------------------------------------------------
+      echo $ hdiutil attach /tmp/${isoName}.sparseimage -noverify -nobrowse -mountpoint /Volumes/install_build
+      hdiutil attach /tmp/${isoName}.sparseimage -noverify -nobrowse -mountpoint /Volumes/install_build
+    fi
 
     echo
     echo Restore the Base System into the ${isoName} ISO image
     echo --------------------------------------------------------------------------
-    if [ "${isoName}" == "HighSierra" ] || [ "${isoName}" == "Mojave" ] || [ "${isoName}" == "Catalina" ] ; then
+    if [ "${isoName}" == "BigSur" ] ; then
+      echo "N/A skipping..."
+    elif [ "${isoName}" == "HighSierra" ] || [ "${isoName}" == "Mojave" ] || [ "${isoName}" == "Catalina" ] ; then
       echo $ asr restore -source "${installerAppName}"/Contents/SharedSupport/BaseSystem.dmg -target /Volumes/install_build -noprompt -noverify -erase
       #following asr command returns an error and prints:
       #"Personalization succeeded"
@@ -84,7 +91,9 @@ function createISO()
     echo
     echo Remove Package link and replace with actual files
     echo --------------------------------------------------------------------------
-    if [ "${isoName}" == "Mojave" ] || [ "${isoName}" == "Catalina" ] ; then
+    if [ "${isoName}" == "BigSur" ] ; then
+      echo "N/A skipping..."
+    elif [ "${isoName}" == "Mojave" ] || [ "${isoName}" == "Catalina" ] ; then
       echo $ ditto -V /Volumes/install_app/Packages /Volumes/macOS\ Base\ System/System/Installation/
       ditto -V /Volumes/install_app/Packages /Volumes/macOS\ Base\ System/System/Installation/
     elif [ "${isoName}" == "HighSierra" ] ; then
@@ -100,7 +109,10 @@ function createISO()
     echo
     echo Copy macOS ${isoName} installer dependencies
     echo --------------------------------------------------------------------------
-    if [ "${isoName}" == "Mojave" ] || [ "${isoName}" == "Catalina" ] ; then
+    if [ "${isoName}" == "BigSur" ] ; then
+      echo $ sudo /Applications/"${installerAppName}"/Contents/Resources/createinstallmedia --volume /Volumes/install_app --nointeraction
+      sudo /Applications/"${installerAppName}"/Contents/Resources/createinstallmedia --volume /Volumes/install_app --nointeraction
+    elif [ "${isoName}" == "Mojave" ] || [ "${isoName}" == "Catalina" ] ; then
       echo $ ditto -V "${installerAppName}"/Contents/SharedSupport/BaseSystem.chunklist /Volumes/macOS\ Base\ System/BaseSystem.chunklist
       ditto -V "${installerAppName}"/Contents/SharedSupport/BaseSystem.chunklist /Volumes/macOS\ Base\ System/BaseSystem.chunklist
       echo $ ditto -V "${installerAppName}"/Contents/SharedSupport/BaseSystem.dmg /Volumes/macOS\ Base\ System/BaseSystem.dmg
@@ -120,13 +132,20 @@ function createISO()
     echo
     echo Unmount the installer image
     echo --------------------------------------------------------------------------
-    echo $ hdiutil detach /Volumes/install_app
-    hdiutil detach /Volumes/install_app
+    if [ "${isoName}" == "BigSur" ] ; then
+      echo $ hdiutil detach /Volumes/"Install macOS Big Sur"
+      hdiutil detach /Volumes/"Install macOS Big Sur" -force # NOTE: force because "Resource busy"
+    else
+      echo $ hdiutil detach /Volumes/install_app
+      hdiutil detach /Volumes/install_app
+    fi
 
     echo
     echo Unmount the sparse bundle
     echo --------------------------------------------------------------------------
-    if [ "${isoName}" == "Mojave" ] || [ "${isoName}" == "Catalina" ] ; then
+    if [ "${isoName}" == "BigSur" ] ; then
+      echo "N/A skipping..."
+    elif [ "${isoName}" == "Mojave" ] || [ "${isoName}" == "Catalina" ] ; then
       echo $ hdiutil detach /Volumes/macOS\ Base\ System/
       hdiutil detach /Volumes/macOS\ Base\ System/
     else
