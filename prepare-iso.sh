@@ -45,7 +45,7 @@ function createISO()
     fi
 
     if [ ${error} -ne 0 ] ; then
-      echo "Failed to mount the InstallESD.dmg from the instaler at ${installerAppName}.  Exiting. (${error})"
+      echo "Failed to mount the InstallESD.dmg from the installer at ${installerAppName}.  Exiting. (${error})"
       return ${error}
     fi
 
