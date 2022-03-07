@@ -62,7 +62,7 @@ function createISO()
       return ${error}
     fi
 
-    if [[ "${isoName}" != "BigSur" || "${isoName}" != "Monterey"  ]] ; then
+    if [[ "${isoName}" != "BigSur" && "${isoName}" != "Monterey"  ]] ; then
       echo
       echo Mount the sparse bundle for package addition
       echo --------------------------------------------------------------------------
