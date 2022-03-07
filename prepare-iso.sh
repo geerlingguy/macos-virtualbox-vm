@@ -8,7 +8,8 @@
 #   - High Sierra (10.13)
 #   - Mojave (10.14)
 #   - Catalina (10.15)
-
+#   - Big Sur (11.0)
+#   - Monterey (12.2)
 set -e
 
 #
@@ -24,7 +25,7 @@ function createISO()
     local isoName=${2}
     local error=0
 
-    # echo Debug: installerAppName = ${installerAppName} , isoName = ${isoName}
+    #  echo Debug: installerAppName = ${installerAppName} , isoName = ${isoName}
 
     echo
     echo Create ${isoName} blank ISO image with a Single Partition - Apple Partition Map
@@ -39,7 +40,7 @@ function createISO()
     echo Mount the installer image
     echo -----------------------------------------------------------
 
-    if [ "${isoName}" == "BigSur" ] ; then
+    if [[ "${isoName}" == "BigSur" || "${isoName}" == "Monterey" ]] ; then
       echo $ hdiutil attach /tmp/${isoName}.sparseimage -noverify -nobrowse -mountpoint /Volumes/install_app
       hdiutil attach /tmp/${isoName}.sparseimage -noverify -nobrowse -mountpoint /Volumes/install_app
     elif [ -e "${installerAppName}" ] ; then
@@ -61,7 +62,7 @@ function createISO()
       return ${error}
     fi
 
-    if [ "${isoName}" != "BigSur" ] ; then
+    if [[ "${isoName}" != "BigSur" || "${isoName}" != "Monterey"  ]] ; then
       echo
       echo Mount the sparse bundle for package addition
       echo --------------------------------------------------------------------------
@@ -72,7 +73,7 @@ function createISO()
     echo
     echo Restore the Base System into the ${isoName} ISO image
     echo --------------------------------------------------------------------------
-    if [ "${isoName}" == "BigSur" ] ; then
+    if [[ "${isoName}" == "BigSur" || "${isoName}" == "Monterey" ]] ; then
       echo "N/A skipping..."
     elif [ "${isoName}" == "HighSierra" ] || [ "${isoName}" == "Mojave" ] || [ "${isoName}" == "Catalina" ] ; then
       echo $ asr restore -source "${installerAppName}"/Contents/SharedSupport/BaseSystem.dmg -target /Volumes/install_build -noprompt -noverify -erase
@@ -91,7 +92,7 @@ function createISO()
     echo
     echo Remove Package link and replace with actual files
     echo --------------------------------------------------------------------------
-    if [ "${isoName}" == "BigSur" ] ; then
+    if [[ "${isoName}" == "BigSur" || "${isoName}" == "Monterey"  ]] ; then
       echo "N/A skipping..."
     elif [ "${isoName}" == "Mojave" ] || [ "${isoName}" == "Catalina" ] ; then
       echo $ ditto -V /Volumes/install_app/Packages /Volumes/macOS\ Base\ System/System/Installation/
@@ -109,7 +110,7 @@ function createISO()
     echo
     echo Copy macOS ${isoName} installer dependencies
     echo --------------------------------------------------------------------------
-    if [ "${isoName}" == "BigSur" ] ; then
+    if [[ "${isoName}" == "BigSur" || "${isoName}" == "Monterey" ]] ; then
       echo $ sudo /Applications/"${installerAppName}"/Contents/Resources/createinstallmedia --volume /Volumes/install_app --nointeraction
       sudo /Applications/"${installerAppName}"/Contents/Resources/createinstallmedia --volume /Volumes/install_app --nointeraction
     elif [ "${isoName}" == "Mojave" ] || [ "${isoName}" == "Catalina" ] ; then
@@ -135,6 +136,9 @@ function createISO()
     if [ "${isoName}" == "BigSur" ] ; then
       echo $ hdiutil detach /Volumes/"Install macOS Big Sur"
       hdiutil detach /Volumes/"Install macOS Big Sur" -force # NOTE: force because "Resource busy"
+    elif [ "${isoName}" == "Monterey" ] ; then
+      echo $ hdiutil detach /Volumes/"Install macOS Monterey"
+      hdiutil detach /Volumes/"Install macOS Monterey" -force # NOTE: force because "Resource busy"
     else
       echo $ hdiutil detach /Volumes/install_app
       hdiutil detach /Volumes/install_app
@@ -143,7 +147,7 @@ function createISO()
     echo
     echo Unmount the sparse bundle
     echo --------------------------------------------------------------------------
-    if [ "${isoName}" == "BigSur" ] ; then
+    if [[ "${isoName}" == "BigSur" || "${isoName}" == "Monterey"  ]] ; then
       echo "N/A skipping..."
     elif [ "${isoName}" == "Mojave" ] || [ "${isoName}" == "Catalina" ] ; then
       echo $ hdiutil detach /Volumes/macOS\ Base\ System/
@@ -228,7 +232,11 @@ else
             if installerExists "Install OS X Yosemite.app" ; then
               createISO "Install OS X Yosemite.app" "Yosemite"
             else
-              echo "Could not find installer for Yosemite (10.10), El Capitan (10.11), Sierra (10.12), High Sierra (10.13), Mojave (10.14), Catalina (10.15) or Big Sur (11.0)."
+              if installerExists "Install macOS Monterey.app" ; then
+                createISO "Install macOS Monterey.app" "Monterey"
+              else 
+                echo "Could not find installer for Yosemite (10.10), El Capitan (10.11), Sierra (10.12), High Sierra (10.13), Mojave (10.14), Catalina (10.15), Big Sur (11.0) or Monterey (12.2)"
+              fi
             fi
           fi
         fi
