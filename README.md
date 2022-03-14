@@ -19,6 +19,7 @@ To build a VM running macOS, follow the directions below:
       - type: `Mac OS X`
       - version: `Mac OS X (64-bit)`.
   5. Follow the rest of the VM creation wizard and either leave the defaults or adjust to your liking.
+      - For Big Sur, the installer requires the disk to have at least 35.3 GB.
   6. Go into the Settings for the new VM you created and:
     1. Under 'Display', increase the Video Memory to at least 128MB, otherwise macOS might not boot correctly, and display performance will be abysmal.
     2. Under 'Audio', uncheck 'Enable Audio', otherwise the VM may display 'choppy' performance.
@@ -54,7 +55,7 @@ To build a VM running macOS, follow the directions below:
   - If keyboard and mouse do not work inside the VM:
     1. Ensure the VirtualBox Extension Pack is installed.
     2. In the VM settings, under `Ports > USB`, select `USB 3.0 (xHCI) Control`.
-
+  - If for Big Sur the installer says `The selected volume is not large enough to install on. A minimum of 35.3 GB is required.`, shutdown the VM, go to File > Virtual Media Manager, and increase the disk size. Now, restart the VM, go to Disk Utility, delete the too-small partition and re-create it to use all of the available space.
 ## Larger VM Screen Resolution
 
 To control the screen size of your macOS VM:
