@@ -214,34 +214,20 @@ done
 
 if installerExists "Install macOS Monterey.app" ; then
   createISO "Install macOS Monterey.app" "Monterey"
+elif installerExists "Install macOS Big Sur.app" ; then
+  createISO "Install macOS Big Sur.app" "BigSur"
+elif installerExists "Install macOS Catalina.app" ; then
+  createISO "Install macOS Catalina.app" "Catalina"
+elif installerExists "Install macOS Mojave.app" ; then
+  createISO "Install macOS Mojave.app" "Mojave"
+elif installerExists "Install macOS High Sierra.app" ; then
+  createISO "Install macOS High Sierra.app" "HighSierra"
+elif installerExists "Install macOS Sierra.app" ; then
+  createISO "Install macOS Sierra.app" "Sierra"
+elif installerExists "Install OS X El Capitan.app" ; then
+  createISO "Install OS X El Capitan.app" "ElCapitan"
+elif installerExists "Install OS X Yosemite.app" ; then
+  createISO "Install OS X Yosemite.app" "Yosemite"
 else
-  if installerExists "Install macOS Big Sur.app" ; then
-    createISO "Install macOS Big Sur.app" "BigSur"
-  else
-    if installerExists "Install macOS Catalina.app" ; then
-      createISO "Install macOS Catalina.app" "Catalina"
-    else
-      if installerExists "Install macOS Mojave.app" ; then
-        createISO "Install macOS Mojave.app" "Mojave"
-      else
-        if installerExists "Install macOS High Sierra.app" ; then
-          createISO "Install macOS High Sierra.app" "HighSierra"
-        else
-          if installerExists "Install macOS Sierra.app" ; then
-            createISO "Install macOS Sierra.app" "Sierra"
-          else
-            if installerExists "Install OS X El Capitan.app" ; then
-              createISO "Install OS X El Capitan.app" "ElCapitan"
-            else
-              if installerExists "Install OS X Yosemite.app" ; then
-                createISO "Install OS X Yosemite.app" "Yosemite"
-              else
-                echo "Could not find installer for Yosemite (10.10), El Capitan (10.11), Sierra (10.12), High Sierra (10.13), Mojave (10.14), Catalina (10.15), Big Sur (11.0), or Monterey (12.0)."
-              fi
-            fi
-          fi
-        fi
-      fi
-    fi
-  fi
+  echo "Could not find installer for Yosemite (10.10), El Capitan (10.11), Sierra (10.12), High Sierra (10.13), Mojave (10.14), Catalina (10.15), Big Sur (11.0), or Monterey (12.0)."
 fi
