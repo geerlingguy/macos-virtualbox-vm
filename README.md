@@ -23,7 +23,15 @@ To build a VM running macOS, follow the directions below:
   6. Go into the Settings for the new VM you created and:
     1. Under 'Display', increase the Video Memory to at least 128MB, otherwise macOS might not boot correctly, and display performance will be abysmal.
     2. Under 'Audio', uncheck 'Enable Audio', otherwise the VM may display 'choppy' performance.
-  7. In Terminal, run the command `VBoxManage modifyvm VM_NAME --cpuidset 00000001 000306a9 00020800 80000201 178bfbff` (where `VM_NAME` is the exact name of the VM set in step 4) so the VM has the right CPU settings for macOS.
+  7. In Terminal, run the command 
+  ```VMNAME='Your VM name here'
+VBoxManage modifyvm ${VMNAME} --cpuidset 00000001 000106e5 00100800 0098e3fd bfebfbff
+VBoxManage setextradata ${VMNAME} "VBoxInternal/Devices/efi/0/Config/DmiSystemProduct" "iMac11,3"
+VBoxManage setextradata ${VMNAME} "VBoxInternal/Devices/efi/0/Config/DmiSystemVersion" "1.0"
+VBoxManage setextradata ${VMNAME} "VBoxInternal/Devices/efi/0/Config/DmiBoardProduct" "Iloveapple"
+VBoxManage setextradata ${VMNAME} "VBoxInternal/Devices/smc/0/Config/DeviceKey" "ourhardworkbythesewordsguardedpleasedontsteal(c)AppleComputerInc"
+VBoxManage setextradata ${VMNAME} "VBoxInternal/Devices/smc/0/Config/GetKeyFromRealSMC" 1
+  ```
   8. Click 'Start' to boot the new VM.
   9. Select the iso created in step 2 when VirtualBox asks for it.
   10. In the installer, select your preferred language.
