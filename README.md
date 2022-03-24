@@ -69,6 +69,12 @@ Replace `VM_NAME` with the name of your Virtual Machine. Replace `N` with one of
 
 The video mode can only be changed when the VM is powered off and remains persistent until changed. See more details in [this forum discussion](https://forums.virtualbox.org/viewtopic.php?f=22&t=54030).
 
+If you're still having trouble after trying all of the above, and for VirtualBox 5.2+, the following command may also help ([see documentation here](https://www.virtualbox.org/manual/ch03.html#efividmode)):
+
+          VBoxManage setextradata "[VM_NAME]" VBoxInternal2/EfiGraphicsResolution HxV
+
+where `H` is the height and `W` is the width of your display, e.g. 1440x900.
+
 ## Notes
 
   - The code for this example originally came from VirtualBox forums and especially [this article](http://sqar.blogspot.de/2014/10/installing-yosemite-in-virtualbox.html).
